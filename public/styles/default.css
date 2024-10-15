@@ -1,0 +1,171 @@
+body {font-family: 'Montserrat', sans-serif;}
+
+ul {padding: 0 !important;}
+li {list-style: none;}
+a {text-decoration: none !important;}
+
+.btn-1, .btn-2, .btn-3, .btn-5 {
+    background-color: #FF1493;
+    color: #FFFFFF;
+}
+
+.btn-4 {
+    background-color: #FFFFFF;
+    color: rgb(150, 150, 150);
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-1, .btn-2, .btn-3, .btn-4, .btn-5 {
+    border: none;
+    transition: all 0.5s ease;
+    font-weight: bold;
+}
+
+.btn-1 {width: 160px; height: 40px; border-radius: 10px;}
+.btn-2, .btn-4, .btn-5 {width: 100px; height: 40px; border-radius: 5px;}
+.btn-3 {width: 80px; height: 30px; border-radius: 5px;}
+
+.btn-1:hover, .btn-2:hover, .btn-3:hover {
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+    background-color: #ff2f9e;
+}
+
+.btn-4:hover {
+    background-color: #ff2f9e;
+    color: #FFFFFF;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-5:hover {
+    background-color: #ffffff;
+    color: #FF1493;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-1:active, .btn-2:active, .btn-3:active, .btn-4:active {
+    opacity: 0.7;
+}
+
+.btn-3 {font-size: 14px;}
+
+.standout-btn  {
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: #ffffff;
+    background-image: linear-gradient(to right, #FF1493, #ff1491dc, #ff14919d);
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.15);
+    animation: scaleAnimation 2s infinite;
+}
+
+.standout-btn:hover {
+    background-image: linear-gradient(to left, #FF1493, #ff1491c4, #ff149180);
+}
+
+.standout-btn svg {
+    margin-right: 10px;
+    fill: #ffffff;
+    height: 18px;
+}
+
+.translator {
+    padding: 8px 10px;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    margin-right: 30px;
+    position: relative;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+}
+
+.translator img {
+    width: 30px;
+}
+
+.translator svg {
+    fill: rgb(150, 150, 150);
+    transition: transform 0.3s ease-in;
+    margin-left: 5px;
+}
+
+.translator:hover svg {
+    transform: rotate(180deg);
+}
+
+.translator .lenguage-select {
+    cursor: default;
+}
+
+.translator .op-language {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+}
+
+.translator:hover .op-language {
+    display: block;
+}
+
+.translator .op-language .box {
+    padding: 10px 12px;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+}
+
+.translator .op-language button {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: #FFFFFF;
+    border: none;
+    transition: all 0.8s ease;
+}
+
+#en {
+    border-top-left-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+#pt {
+    border-bottom-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.translator .op-language button:hover {
+    background-color: rgb(235, 235, 235);
+}
+
+.lenguage-select img, .op-language img {
+    min-width: 30px;
+    max-width: 40px;
+    height: auto;
+}
+
+.whatsapp-button {
+    position: fixed;
+    bottom: 35px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #FF1493;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    object-fit: cover;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease-in-out;
+    z-index: 995;
+}
+
+.whatsapp-button:hover {
+    transform: scale(1.1);
+}
+
+.whatsapp-button img {
+    height: 35px;
+}

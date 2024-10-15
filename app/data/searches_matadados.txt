@@ -1,0 +1,29 @@
+Coleção: searches
+
+Descrição:
+Esta coleção armazena informações sobre as contas mais pesquisadas dentro da plataforma. Cada documento representa uma conta pesquisada e contém o nome de usuário da conta e o número de vezes que ela foi pesquisada.
+
+Estrutura dos Documentos:
+- _id: Identificador único do documento (ObjectId)
+- username: Nome de usuário da conta do Instagram que foi pesquisada (string)
+- count: Número de vezes que essa conta foi pesquisada (integer)
+
+Exemplo:
+
+{
+   "_id": ObjectId(...),
+   "username": "@username1",
+   "count": 15
+},
+{
+   "_id": ObjectId(...),
+   "username": "@username2",
+   "count": 10
+},
+{
+   "_id": ObjectId(...),
+   "username": "@username3",
+   "count": 8
+}
+
+

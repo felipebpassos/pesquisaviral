@@ -1,0 +1,18 @@
+{
+    "freemium": {
+        "type": "freemium",
+        "description": "O plano Freemium é uma opção gratuita que oferece recursos básicos para os usuários. É ideal para usuários que desejam experimentar a plataforma antes de decidir sobre uma assinatura paga.",
+        "max_searches": 3
+    },
+    "individual": {
+        "type": "individual",
+        "description": "O plano Individual é projetado para usuários que precisam de mais recursos e funcionalidades do que o plano Freemium oferece. É adequado para uso pessoal ou por pequenas equipes.",
+        "max_searches": 25
+    },
+    "enterprise": {
+        "type": "enterprise",
+        "description": "O plano Enterprise é uma solução completa para empresas e organizações que exigem acesso a recursos avançados e suporte personalizado. É altamente escalável e oferece flexibilidade para atender às necessidades específicas de grandes empresas.",
+        "max_searches": "unlimited"
+    }
+}
+ 

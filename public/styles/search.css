@@ -1,0 +1,334 @@
+header {
+    flex: 1;
+    padding-bottom: 20px;
+}
+
+#results-container .card {width: 180px; display: inline-block;}
+
+#results-container .card img {width: 100%;}
+
+#results-container .card-text {font-size: 12px;}
+
+#results-container .card-bottom {display: flex; justify-content: space-between; width: 100%; font-size: 14px;}
+
+#results-container .card button, .profile-ig .options button {
+    background-color: #ffffff;
+    color: #FF1493;
+    padding: 5px 8px;
+    border: none;
+    transition: all 0.5s ease;
+    font-weight: bold;
+    border-radius: 3px;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+#results-container .card button {
+    font-size: 13px;
+}
+
+.profile-ig .options button {
+    padding: 8px 10px;
+    margin-left: 20px;
+}
+
+#results-container .card button:hover, .profile-ig .options button:hover {
+    background-color: #FF1493;
+    color: #FFFFFF;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.profile-ig .options button svg, .profile-ig .options button i {
+    margin-right: 5px;
+}
+
+#results-container .card button svg, .profile-ig .options button svg {
+    transform: translateY(-2px);
+    margin-right: 5px;
+    transition: all 0.5s ease;
+    fill: #FF1493;
+}
+
+#results-container .card button:hover svg, .profile-ig .options button:hover svg {
+    fill: #FFFFFF;
+}
+
+.progress-bar {
+    background-color: #FF1493 !important;
+}
+
+.top-options {
+    display: flex;
+}
+
+.top-options form {
+    display: flex;
+    width: 100%;
+}
+
+.top-options form input {
+    flex: 1;
+    height: 40px;
+    margin-right: 10px;
+    border: none !important;
+    outline: none !important;
+    padding: 0 10px;
+}
+
+.profile-ig {
+    display: flex;
+    width: 100%;
+    position: relative;
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+.profile-ig .options {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.profile-ig-picture {
+    border-radius: 50%;
+    height: 100px;
+    width: 100px;
+    overflow: hidden;
+}
+
+.profile-ig-picture img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.bio {
+    display: flex;
+    align-items: center;
+}
+
+.bio p {
+    margin-right: 20px;
+}
+
+.bio a {
+    color: rgb(120, 120, 120);
+}
+
+.bio a:hover {
+    color: rgb(94, 94, 94);
+}
+
+.metricBox {
+    background-color: #fcfcfc;
+    border-radius: 5px;
+    box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.1);
+    max-width: 360px !important;
+    height: 120px;
+    padding: 10px 20px;
+}
+
+.metricBox .title {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    margin: auto;
+    margin-bottom: 20px;
+}
+
+.metricBox .title i {
+    color: rgb(100, 100, 100);
+    margin-right: 10px;
+}
+
+.metricBox .title p {
+    margin: 0;
+}
+
+.metricBox h5 {
+    font-weight: bolder;
+    font-size: 16px;
+    color: #FF1493;
+}
+
+.metricBox span {
+    font-size: 14px;
+    font-weight: bold;
+    color: rgb(130, 130, 130);
+}
+
+.order-options {
+    display: flex;
+    margin-top: 40px;
+}
+
+.selectBox {
+    display: flex;
+    flex-direction: column;
+    margin-right: 40px;
+}
+
+.selectBox label {
+    margin-bottom: 10px;
+    color: #777;
+}
+
+.selectBox select {
+    padding: 5px;
+    height: 30px;
+    width: 250px;
+    border: none;
+    box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.1);
+}
+
+#results-container {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.posts {
+    padding-top: 40px;
+}
+
+.post-container {
+    max-width: 390px !important;
+    margin-bottom: 80px;
+}
+
+.post {
+    width: 100%;
+    background-color: white;
+    overflow: hidden;
+    border-radius: 5px;
+    box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.02);
+}
+
+.media {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background-color: rgb(230, 230, 230);
+    height: 420px;
+}
+
+.media img,
+.media video {
+    object-fit: contain;
+    max-height: 420px;
+}
+
+.bottom {
+    padding: 15px 20px;
+}
+
+.social-counts {
+    display: flex;
+}
+
+.social-counts p {
+    margin: 0 30px;
+    margin-top: 20px;
+    margin-left: 0;
+    font-size: 13px;
+    color: rgb(140, 140, 140);
+}
+
+.social-counts i {
+    font-size: 17px;
+    margin-right: 5px;
+    color: rgb(110, 110, 110);
+}
+
+.captionBox {
+    position: relative;
+    margin-top: 15px;
+    margin-bottom: 45px;
+    font-size: 14px;
+}
+
+.caption {
+    max-height: 60px;
+    min-height: 60px;
+    transition: all 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+.mostrar-mais {
+    color: rgb(165, 165, 165);
+    position: absolute;
+    right: 0;
+    bottom: -30px;
+    z-index: 3;
+    border: none;
+    background-color: transparent;
+}
+
+.mostrar-mais:hover {
+    transition: all 0.5s ease;
+    color: rgb(100, 100, 100);
+}
+
+.fade-bottom {
+    left: 0;
+    width: 100%;
+    height: 15px;
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent, rgb(255, 255, 255));
+}
+
+.download-media {
+    border: none;
+    background-color: transparent;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.download-media i {
+    color: #FF1493;
+    font-size: 25px;
+    transition: all 0.8s ease;
+}
+
+.download-media:hover i {
+    transform: scale(1.1);
+}
+
+.post footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 25px;
+}
+
+.post footer .buttons {
+    display: flex;
+    align-items: center;
+}
+
+.load-more-btn {
+    margin: auto;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    background-color: rgb(230, 230, 230);
+    transition: all 0.5s ease;
+}
+
+.load-more-btn:hover {
+    transform: scale(1.1);
+}
+
+.load-more-btn img {
+    width: 35px;
+}

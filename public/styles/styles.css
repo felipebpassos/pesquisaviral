@@ -1,0 +1,411 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+a {
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+button {
+    transition: 0.3s;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button a {
+    color: inherit;
+}
+
+body {
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+
+header {
+    padding: 0 8%;
+    height: 120px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    width: 60px;
+    height: auto;
+}
+
+.logo img {
+    width: 100%;
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+}
+
+header nav ul {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+header nav ul li {
+    display: inline-block;
+    margin-right: 40px;
+}
+
+header nav ul li a {
+    color: rgb(150, 150, 150);
+    font-weight: bold;
+    text-decoration: none !important;
+}
+
+header nav ul li a:hover {
+    color: rgb(100, 100, 100);
+}
+
+.login button,
+#premium-btn {
+    letter-spacing: 2px;
+}
+
+main {
+    padding: 0 8%;
+}
+
+.box-flex-full {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.sessao-titulo {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 25px;
+}
+
+.sessao-subtitulo {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 100px;
+    font-size: 50px;
+    color: rgb(100, 100, 100);
+    font-family: "Nunito", sans-serif !important;
+}
+
+#hero {
+    background-color: white;
+    padding-top: 40px;
+    height: 100vh;
+}
+
+#hero .content {
+    display: flex;
+    align-items: center;
+}
+
+.main-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-img img {
+    display: block;
+    width: 100%
+}
+
+.description {
+    margin-bottom: 40px;
+}
+
+.description h1 {
+    font-family: "Nunito", sans-serif !important;
+    color: rgb(141, 141, 141);
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 52px;
+    line-height: 1.2em;
+}
+
+.description h5 {
+    color: rgb(170, 170, 170);
+    line-height: 1.7em;
+    margin-bottom: 50px;
+    max-width: 600px;
+}
+
+#hero .options {
+    display: flex;
+}
+
+#premium-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+    padding: 10px 20px;
+    margin-left: 20px;
+    border-radius: 8px;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+}
+
+#premium-btn:hover {
+    background-color: rgb(170, 170, 170);
+    color: #ffffff;
+}
+
+#premium-btn svg {
+    margin-right: 10px;
+    fill: rgb(150, 150, 150);
+    height: 18px;
+}
+
+#premium-btn:hover svg {
+    fill: #ffffff;
+}
+
+.presentation-img-box {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    background-color: rgb(238, 238, 238);
+    width: 350px;
+    height: 300px;
+    margin-bottom: 40px;
+    border-radius: 30px;
+}
+
+#advantages {
+    color: rgb(158, 158, 158);
+    padding-top: 30px;
+    padding-bottom: 30px;
+    width: 100%;
+}
+
+.card {
+    min-width: 500px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+/* Plans Section */
+#plans {
+    text-align: center;
+    /* Centers the text of all elements within the section */
+}
+
+#plans .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#plans .col-md-4 {
+    flex: 1;
+    /* Faz com que todos os cards expandam igualmente para ocupar o espaço disponível */
+    display: flex;
+    flex-direction: column;
+    /* Organiza o conteúdo do card verticalmente */
+}
+
+#plans .card-body {
+    flex-grow: 1;
+    /* Permite que o corpo do card expanda para preencher o espaço disponível, mantendo o footer na parte inferior */
+}
+
+#plans .col-md-4 {
+    min-width: 280px;
+}
+
+#plans .card {
+    border: none;
+    /* Optional: Removes the default card border */
+    margin-bottom: 60px;
+    /* Space between cards */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Smooth transition for transform and shadow */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    /* Subtle shadow for normal state */
+    font-family: "Nunito", sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    padding: 30px 40px;
+    padding-bottom: 40px;
+    min-height: 600px;
+}
+
+#plans .card:hover {
+    transform: translateY(5px) scale(1.05);
+    /* Moves down by 5px and scales up */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Stronger shadow on hover */
+}
+
+#plans .card-title {
+    color: #333333;
+    /* Very dark gray for the title */
+    font-size: 25px;
+    /* Larger font size for titles */
+    font-weight: 700;
+    margin-bottom: 15px;
+    /* Space below the title */
+}
+
+#plans .card-text.price {
+    color: #FF1493;
+    /* Pink color for the price */
+    font-size: 65px;
+    /* Much larger font size for the price */
+    font-weight: bold;
+    /* Makes the price bold */
+    margin: 10px 0;
+    /* Space around the price */
+}
+
+#plans ul {
+    list-style-type: none;
+    /* Removes default list styling */
+    padding: 0;
+    /* Removes padding */
+    color: #999999;
+    /* Lighter gray for the list items */
+    font-size: 16px;
+    /* Smaller font size for list items */
+}
+
+#plans ul li {
+    padding: 15px;
+    /* Removes padding */
+}
+
+#plans img.card-img {
+    width: 100%;
+    /* Makes the image responsive */
+    max-width: 180px;
+    /* Maximum width of the image */
+    height: auto;
+    /* Maintains aspect ratio */
+    margin: 20px auto;
+    /* Vertically spaces the image from other elements */
+}
+
+#faq {
+    background-color: var(--bege-escuro);
+    padding: 120px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#faq h1 {
+    font-size: 60px;
+    letter-spacing: 5px;
+    font-weight: 800;
+    margin-bottom: 60px;
+    text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.accordion-1 {
+    padding: 0;
+}
+
+.accordion-1 li {
+    display: block;
+    cursor: pointer;
+    width: 100%;
+    color: rgb(100, 100, 100);
+    margin-bottom: 20px;
+}
+
+.accordion-1 li p {
+    margin: 0px;
+    max-width: 90%;
+}
+
+.resposta {
+    color: rgb(160, 160, 160);
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.8s ease;
+    padding: 0 20px;
+    background-color: rgba(100, 100, 100, 0.15);
+}
+
+.pergunta.ativo .resposta {
+    padding: 10px 20px;
+    max-height: 600px;
+    animation: fade 1s ease-in-out;
+}
+
+.pergunta.ativo svg {
+    transform: rotate(180deg);
+}
+
+.pergunta-header {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    padding: 10px 20px;
+    width: 100%;
+    font-size: 18px;
+    background-color: var(--bege);
+    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
+}
+
+#faq svg {
+    margin-top: 10px;
+    fill: transparent;
+    transition: transform 1s ease-in;
+}
+
+.accordion-1 {
+    width: 300px;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+@media (min-width: 820px) {
+    .accordion-1 {
+        width: 100%;
+    }
+}
+
+@media (min-width: 500px) {
+    .accordion-1 {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1020px) {
+    #plans .row {
+        display: block;
+    }
+
+    #plans .col-md-4 {
+        width: 80%;
+        margin: auto;
+    }
+}

@@ -1,0 +1,5 @@
+curl -i -X GET "https://graph.facebook.com/{graph-api-version}/oauth/access_token?  
+    grant_type=fb_exchange_token&          
+    client_id=677863474061108&
+    client_secret=ef6bb2d1761f97f2228fae9e59beca24&
+    fb_exchange_token={short-token} 

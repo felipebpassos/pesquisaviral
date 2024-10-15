@@ -1,0 +1,62 @@
+aside {
+    background-color: #ffffff;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 220px;
+    height: 100vh;
+    z-index: 999;
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    margin: 30px auto;
+    margin-top: 50px;
+    display: flex;
+    width: 70px;
+}
+
+.logo img {
+    width: 100%;
+}
+
+nav li {
+    width: 100%;
+}
+
+nav a {
+    width: 100%;
+    padding: 18px 40px;
+    display: flex;
+    color: rgb(158, 158, 158);
+    letter-spacing: 1.5px;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    transition: all 0.5s ease;
+    position: relative;
+}
+
+nav a:hover {
+    background-color: rgb(248, 248, 248);
+}
+
+nav a.atual {
+    background-color: rgb(242, 242, 242);
+}
+
+nav a.atual::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    background-color: #FF1493;
+    z-index: 1000;
+}
+
+nav a i {
+    margin-right: 15px;
+}

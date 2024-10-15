@@ -1,0 +1,16 @@
+TIKTOK
+
+oauth tiktok
+
+- https://developers.tiktok.com/doc/login-kit-manage-user-access-tokens/
+
+search profiles and videos from tiktok
+
+- https://developers.tiktok.com/doc/research-api-specs-query-user-info?enter_method=left_navigation
+
+- https://developers.tiktok.com/doc/tiktok-api-v2-video-list
+
+INTEFACE
+
+- Access to links of nav bar from painel.php with no need to refresh page
+

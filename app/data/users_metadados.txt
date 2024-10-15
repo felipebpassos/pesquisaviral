@@ -1,0 +1,69 @@
+Coleção: users
+
+Descrição:
+Esta coleção armazena informações sobre os usuários da plataforma. Cada documento representa um usuário e contém detalhes como nome de usuário, e-mail, plano de assinatura, pesquisas recentes e pesquisas favoritas.
+
+Estrutura dos Documentos:
+- _id: Identificador único do documento (ObjectId)
+- username: Nome de usuário do usuário (string)
+- email: Endereço de e-mail do usuário (string)
+- plan: Detalhes do plano de assinatura do usuário (object)
+  - type: Tipo de plano de assinatura (string)
+  - start_date: Data de início do plano (Date)
+  - expiration_date: Data de expiração do plano (Date)
+- recent_searches: Lista das pesquisas recentes do usuário (array)
+  - _id: Identificador único da pesquisa (ObjectId)
+  - instagram_username: Nome de usuário do Instagram pesquisado (string)
+  - timestamp: Data e hora da pesquisa (Date)
+  - result: Detalhes da resposta da API do Instagram (object)
+- favorite_searches: Lista das pesquisas favoritas do usuário (array)
+  - _id: Identificador único da pesquisa (ObjectId)
+  - instagram_username: Nome de usuário do Instagram pesquisado (string)
+  - timestamp: Data e hora da pesquisa (Date)
+  - result: Detalhes da resposta da API do Instagram (object)
+- monthly_search_count: Contador de pesquisas feitas pelo usuário no mês (integer)
+
+Exemplo:
+
+{
+   "_id": ObjectId(...),
+   "username": "username1",
+   "email": "email1@example.com",
+   "plan": {
+       "type": "freemium",
+       "start_date": ISODate(...),
+       "expiration_date": ISODate(...)
+   },
+   "recent_searches": [
+       {
+           "_id": ObjectId(...),
+           "instagram_username": "@username1",
+           "timestamp": ISODate(...),
+           "result": { /* Detalhes da resposta da API do Instagram */ }
+       },
+       { /* Outras pesquisas recentes... */ }
+   ],
+   "favorite_searches": [
+       {
+           "_id": ObjectId(...),
+           "instagram_username": "@username2",
+           "timestamp": ISODate(...),
+           "result": { /* Detalhes da resposta da API do Instagram */ }
+       },
+       { /* Outras pesquisas favoritas... */ }
+   ],
+   "monthly_search_count": 3
+},
+{
+   "_id": ObjectId(...),
+   "username": "username2",
+   "email": "email2@example.com",
+   "plan": {
+       "type": "premium",
+       "start_date": ISODate(...),
+       "expiration_date": ISODate(...)
+   },
+   "recent_searches": [ /* Pesquisas recentes... */ ],
+   "favorite_searches": [ /* Pesquisas favoritas... */ ],
+   "monthly_search_count": 5
+}
