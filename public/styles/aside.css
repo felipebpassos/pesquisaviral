@@ -10,10 +10,10 @@ aside {
 }
 
 .logo {
-    margin: 30px auto;
+    margin: 60px auto;
     margin-top: 50px;
     display: flex;
-    width: 70px;
+    width: 120px;
 }
 
 .logo img {

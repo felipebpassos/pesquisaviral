@@ -29,7 +29,7 @@ class API
 
     public function getProfileInfo($username)
     {
-        $api_url = "https://graph.facebook.com/v18.0/{$this->user_id}?fields=business_discovery.username({$username}){id,profile_picture_url,followers_count,follows_count,media_count}&access_token={$this->access_token}";
+        $api_url = "https://graph.facebook.com/v21.0/{$this->user_id}?fields=business_discovery.username({$username}){id,profile_picture_url,followers_count,follows_count,media_count}&access_token={$this->access_token}";
 
         $ch = curl_init($api_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -98,7 +98,7 @@ class API
         // Constrói a parte da consulta responsável pela paginação
         $pagination = $afterCursor ? ".after($afterCursor)" : "";
 
-        $api_url = "https://graph.facebook.com/v18.0/{$this->user_id}?fields=business_discovery.username({$username}){media.limit(300)$pagination{id,permalink,caption,media_type,media_url,thumbnail_url,comments_count,like_count}}&access_token={$this->access_token}";
+        $api_url = "https://graph.facebook.com/v21.0/{$this->user_id}?fields=business_discovery.username({$username}){media.limit(300)$pagination{permalink,caption,media_type,media_url,timestamp,thumbnail_url,comments_count,like_count}}&access_token={$this->access_token}";
 
         $ch = curl_init($api_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

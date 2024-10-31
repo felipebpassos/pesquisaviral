@@ -7,22 +7,25 @@
             <?php endif; ?>
 
             <?php if (($plan['max_searches'] - $user['monthly_search_count']) > 0) : ?>
-                Você ainda tem <?= ($plan['max_searches'] - $user['monthly_search_count']); ?> pesquisas restantes.
+                Você ainda tem <?= ($plan['max_searches'] - $user['monthly_search_count']); ?> pesquisas restantes esse mês.
             <?php else : ?>
                 Você atingiu o limite mensal máximo de pesquisas :(
             <?php endif; ?>
-            <a href="#" id="verificarConta">Verificar conta</a>.
+            
+            <?php if ($user['plan']['type'] === 'freemium') : ?>
+                <a href="#" id="verificarConta">Verificar conta</a>.
+            <?php endif; ?> 
         </div>
     <?php endif; ?>
 
     <header>
 
         <div class="top-options">
-            <form>
+            <div class="form-pesquisar">
                 <label for="account-name"></label>
-                <input type="text" id="account-name" name="account-name" placeholder="@username">
-                <button class="btn-2" type="submit">Pesquisar</button>
-            </form>
+                <input type="text" id="campoPesquisa" name="account-name" placeholder="@username">
+                <button class="btn-2" type="submit" id="search-btn">Pesquisar</button>
+            </div>
         </div>
 
         <div class="results">
@@ -215,10 +218,10 @@
             <div class="selectBox">
                 <label for="postType-select">Tipo de post:</label>
                 <select id="postType-select">
-                    <option value="any">Qualquer</option>
-                    <option value="video">Videos</option>
-                    <option value="photo">Fotos</option>
-                    <option value="carousel">Carrossel</option>
+                    <option value="ALL">Qualquer</option>
+                    <option value="VIDEO">Videos</option>
+                    <option value="IMAGE">Fotos</option>
+                    <option value="CAROUSEL_ALBUM">Carrossel</option>
                 </select>
             </div>
             <div class="selectBox">
@@ -237,7 +240,7 @@
     <div class="posts">
 
         <?php if (isset($results['media']['data']) && !empty($results['media']['data'])) : ?>
-            <div class="row" id="results-container"></div>
+            <div class="row" id="results-container-posts"></div>
             <div style="width:100%;">
                 <button class="load-more-btn"><img src="<?php echo BASE_URL; ?>public/img/plus.png"></button>
             </div>

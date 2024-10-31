@@ -29,9 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (profile && validateInstagramUsername(profile)) {
         startSearch(profile);
     }
-
-    // Chama a função para verificar e criar o card se necessário
-    checkSearchAndCreateCard('exemplo');
 });
 
 // Função para iniciar a pesquisa
@@ -51,66 +48,14 @@ function startSearch(accountName) {
             createResultCard(response, accountName);
         },
         error: function (xhr, status, error) {
-            let errorMessage;
-
-            // Verifica o código de status HTTP para definir a mensagem de erro adequada
-            switch (xhr.status) {
-                case 400:
-                    errorMessage = 'Erro: Nome de usuário não foi fornecido. Por favor, preencha o campo de nome de conta.';
-                    break;
-                case 403:
-                    errorMessage = 'Erro: Limite de pesquisas atingido. Atualize seu plano para continuar.';
-                    break;
-                case 404:
-                    errorMessage = 'Erro: Não foi possível obter as informações do perfil. Verifique o nome de usuário e tente novamente.';
-                    break;
-                case 409:
-                    errorMessage = 'Erro: Uma pesquisa já está em andamento para este usuário. Por favor, aguarde.';
-                    break;
-                case 405:
-                    errorMessage = 'Erro: Método de requisição inválido. Por favor, tente novamente.';
-                    break;
-                default:
-                    errorMessage = 'Erro ao iniciar a pesquisa: ';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage += xhr.responseJSON.message; // Mensagem de erro da resposta
-                    } else {
-                        errorMessage += error; // Mensagem de erro genérica
-                    }
-                    break;
+            let errorMessage = 'Erro ao iniciar a pesquisa:';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage += ` ${xhr.responseJSON.message}`; // Mensagem de erro da resposta
+            } else {
+                errorMessage += ` ${error}`; // Mensagem de erro genérica
             }
-
-            alert(errorMessage); // Exibe o alerta com a mensagem de erro
-            console.error('Erro ao iniciar a pesquisa:', errorMessage);
-        }
-    });
-}
-
-function checkSearchAndCreateCard(accountName) {
-    $.ajax({
-        url: config.BASE_URL + 'search/checkSearch',
-        type: 'GET',
-        success: function(response) {
-            try {
-                // Tenta analisar a resposta como JSON
-                response = typeof response === "string" ? JSON.parse(response) : response;
-                
-                console.log("Response:", response);
-                console.log("Status Type:", typeof response.status);
-                console.log("Data Type:", typeof response.data);
-                
-                if (response.status === 'success' && response.data) {
-                    // Cria o card se houver pesquisa em andamento
-                    createResultCard(response.data, accountName);
-                } else {
-                    console.log('Nenhuma pesquisa em andamento encontrada.');
-                }
-            } catch (e) {
-                console.error("Erro ao analisar a resposta JSON:", e);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Erro ao verificar a pesquisa:', error);
+            alert(errorMessage); // Alerta com mensagem de erro
+            console.error('Erro ao iniciar a pesquisa:', error);
         }
     });
 }
@@ -126,22 +71,23 @@ function createResultCard(response, accountName) {
     // Cria o novo card
     var card = $('<div>').addClass('card').data('accountName', accountName);
     var cardBody = $('<div>').addClass('card-body').appendTo(card);
-    
-    // Adiciona a imagem de perfil e o nome do usuário
     $('<img>').attr('src', response.profile_picture_url).addClass('card-img-top').appendTo(cardBody);
     $('<p>').addClass('card-text').text('@' + accountName).appendTo(cardBody);
-    
-    // Exibe a mensagem de tempo estimado
-    $('<p>').addClass('estimated-time').text('A pesquisa estará pronta em aproximadamente 10 minutos.').appendTo(cardBody);
+    var progressBarContainer = $('<div>').addClass('progress').appendTo(cardBody);
+    $('<div>').addClass('progress-bar').attr({
+        role: 'progressbar',
+        'aria-valuenow': '0',
+        'aria-valuemin': '0',
+        'aria-valuemax': '100'
+    }).css('width', '0%').appendTo(progressBarContainer);
 
     // Adiciona o novo card no início do container
     resultsContainer.prepend(card);
 
-    // Finaliza o card após o tempo estimado
-    setTimeout(function () {
-        finalizeSearch(cardBody, accountName);
-    }, 10 * 60 * 1000); // 10 minutos em milissegundos
+    // Iniciar a atualização do progresso
+    updateProgress(cardBody, accountName);
 }
+
 
 function updateProgress(cardBody, accountName) {
     var interval = setInterval(function () {

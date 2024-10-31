@@ -7,18 +7,21 @@
             <?php endif; ?>
 
             <?php if (($plan['max_searches'] - $user['monthly_search_count']) > 0) : ?>
-                Você ainda tem <?= ($plan['max_searches'] - $user['monthly_search_count']); ?> pesquisas restantes.
+                Você ainda tem <?= ($plan['max_searches'] - $user['monthly_search_count']); ?> pesquisas restantes esse mês.
             <?php else : ?>
                 Você atingiu o limite mensal máximo de pesquisas :(
             <?php endif; ?>
-            <a href="#" id="verificarConta">Verificar conta</a>.
+
+            <?php if ($user['plan']['type'] === 'freemium') : ?>
+                <a href="#" id="verificarConta">Verificar conta</a>.
+            <?php endif; ?>    
         </div>
     <?php endif; ?>
 
     <header>
 
         <div class="top-options">
-            <form id="search-form">
+            <form id="search-form" class="form-pesquisar">
                 <label for="account-name"></label>
                 <input type="text" id="account-name" name="account-name" placeholder="@username">
                 <button class="btn-2" type="submit">Pesquisar</button>

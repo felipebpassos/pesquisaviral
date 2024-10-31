@@ -44,7 +44,7 @@
     <header>
 
         <!-- Logo -->
-        <a href="#" class="logo"><img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="Logo"></a>
+        <a href="#" class="logo"><img src="<?php echo BASE_URL; ?>public/img/logo-nova-2.png" alt="Logo"></a>
 
         <nav>
             <ul>

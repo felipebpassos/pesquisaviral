@@ -2,11 +2,14 @@ $(document).ready(function () {
     var offset = 0;
     var postsPerPage = 30;
 
+    // Variável para armazenar o tipo de mídia selecionado
+    var selectedMediaType = "ALL"; // Padrão, exibindo todos os tipos
+
     function displayPosts(start, end) {
         for (var i = start; i < end; i++) {
             var result = medias[i];
             var postHTML = createPostHTML(result);
-            $("#results-container").append(postHTML);
+            $("#results-container-posts").append(postHTML);
         }
     }
 
@@ -74,25 +77,52 @@ $(document).ready(function () {
         }
     });
 
-    // Função para atualizar os resultados com base na opção selecionada
-    function updateResults(orderBy) {
-        if (orderBy === "recent") {
-            medias = resultsByTime;
-        } else if (orderBy === "oldest") {
-            medias = resultsByTime.slice().reverse(); 
-        } else if (orderBy === "likes") {
-            medias = resultsByLikes;
-        } else if (orderBy === "comments") {
-            medias = resultsByComments;
-        }
+    // Função para filtrar por tipo de mídia
+    function filterByMediaType(medias, mediaType) {
+        if (mediaType === "ALL") return medias; // Retorna todos se "ALL" estiver selecionado
+        return medias.filter(function (media) {
+            return media.media_type === mediaType;
+        });
     }
 
+    // Função para atualizar os resultados com base na opção de ordenação e no filtro de tipo
+    function updateResults(orderBy) {
+        var orderedMedias;
+
+        // Define a lista ordenada com base na opção selecionada
+        if (orderBy === "recent") {
+            orderedMedias = resultsByTime;
+        } else if (orderBy === "oldest") {
+            orderedMedias = resultsByTime.slice().reverse();
+        } else if (orderBy === "likes") {
+            orderedMedias = resultsByLikes;
+        } else if (orderBy === "comments") {
+            orderedMedias = resultsByComments;
+        }
+
+        // Aplica o filtro de tipo ao resultado ordenado
+        medias = filterByMediaType(orderedMedias, selectedMediaType);
+    }
+
+    // Evento para atualizar a ordenação ao selecionar no #order-select
     $("#order-select").on("change", function () {
         var selectedValue = $(this).val();
-        updateResults(selectedValue); // Atualizar os resultados com base na opção selecionada
-        offset = 0; // Reiniciar o offset
-        $("#results-container").empty(); // Esvaziar o container
-        displayPosts(offset, offset + postsPerPage); // Exibir os primeiros 30 posts
+        updateResults(selectedValue);
+        offset = 0;
+        $("#results-container-posts").empty();
+        displayPosts(offset, offset + postsPerPage);
+        offset += postsPerPage;
+        $(".load-more-btn").show();
+    });
+
+    // Evento para atualizar o filtro de tipo ao selecionar no #postType-select
+    $("#postType-select").on("change", function () {
+        selectedMediaType = $(this).val();
+        var selectedOrder = $("#order-select").val();
+        updateResults(selectedOrder);
+        offset = 0;
+        $("#results-container-posts").empty();
+        displayPosts(offset, offset + postsPerPage);
         offset += postsPerPage;
         $(".load-more-btn").show();
     });

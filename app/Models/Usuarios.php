@@ -65,9 +65,9 @@ class Usuarios
             $usernameKey = str_replace('.', '_', $username);
 
             // Verifica se o perfil de usuário pesquisado já existe na lista de pesquisas recentes
-            if (isset($recentSearches[$username])) {
-                // Atualiza o documento do usuário no banco de dados para remover o objeto
-                $updateResult = $this->collection->updateOne(
+            if (isset($recentSearches[$usernameKey])) {
+                // Remove o perfil pesquisado existente
+                $this->collection->updateOne(
                     ['email' => $user],
                     ['$unset' => ["recent_searches.$usernameKey" => ""]],
                     ['upsert' => true]
@@ -76,35 +76,71 @@ class Usuarios
 
             // Remove a pesquisa mais antiga se houver mais de 5 pesquisas recentes
             if (count($recentSearches) >= 5) {
-                // Obtém as chaves do objeto recent_searches
-                $keys = array_keys((array) $recentSearches);
-
-                // Extrai a chave do primeiro elemento (a pesquisa mais antiga)
+                $keys = array_keys((array)$recentSearches);
                 $oldestKey = $keys[0];
 
-                // Atualiza o documento do usuário no banco de dados para remover o elemento mais antigo
-                $updateResult = $this->collection->updateOne(
+                // Remove o elemento mais antigo
+                $this->collection->updateOne(
                     ['email' => $user],
                     ['$unset' => ["recent_searches.$oldestKey" => ""]],
                     ['upsert' => true]
                 );
             }
 
+            // Define a data atual
+            $currentDate = new MongoDB\BSON\UTCDateTime();
+
+            $searchResult['saved_at'] = $currentDate;
+
+            // Atualiza 'recent_searches' e 'last_search_date'
             $updateResult = $this->collection->updateOne(
                 ['email' => $user],
-                ['$set' => ["recent_searches.$usernameKey" => $searchResult]],
-                ['upsert' => true] // Permite inserir o documento se não existir
+                [
+                    '$set' => [
+                        "recent_searches.$usernameKey" => $searchResult,
+                        "last_search_date" => $currentDate
+                    ]
+                ],
+                ['upsert' => true]
             );
 
-            return $updateResult->getModifiedCount() ? true : false; // Retorna true se os dados de pesquisa forem atualizados com sucesso
+            return $updateResult->getModifiedCount() ? true : false;
         } else {
             // Se o usuário não for encontrado, retorna falso
             return false;
         }
     }
 
+    public function removeOldSearches($email)
+    {
+        // Define a data limite para considerar como "há mais de 3 dias"
+        $threeDaysAgo = new MongoDB\BSON\UTCDateTime((time() - 3 * 24 * 60 * 60) * 1000);
+
+        // Encontra o usuário para inspecionar as pesquisas recentes
+        $usuario = $this->collection->findOne(['email' => $email]);
+
+        if ($usuario && isset($usuario['recent_searches'])) {
+            $recentSearches = $usuario['recent_searches'];
+
+            // Itera sobre as pesquisas para identificar as mais antigas
+            foreach ($recentSearches as $username => $searchResult) {
+                // Verifica se a pesquisa tem o campo saved_at e se é mais antigo que o limite de 3 dias
+                if (isset($searchResult['saved_at']) && $searchResult['saved_at'] < $threeDaysAgo) {
+                    // Remove as pesquisas antigas
+                    $this->collection->updateOne(
+                        ['email' => $email],
+                        ['$unset' => ["recent_searches.$username" => ""]]
+                    );
+                }
+            }
+        }
+    }
+
     public function getUserSearches($email)
     {
+        // Chama o método para remover pesquisas antigas antes de buscar as pesquisas recentes
+        $this->removeOldSearches($email);
+
         // Verifica se o usuário existe
         $usuario = $this->collection->findOne(['email' => $email]);
 

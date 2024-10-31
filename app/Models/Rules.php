@@ -11,6 +11,10 @@ class Rules
 
     private $plans;
 
+    private $con;
+
+    private $collection;
+
     private $redis;
 
     // Caminho do arquivo JSON com a lista de e-mails
@@ -44,10 +48,16 @@ class Rules
             echo $plansFile;
             exit;
         }
+
+        $this->con = Conexao::getConexao();
+        $this->collection = $this->con->users;
     }
 
     public function getPlan($user)
     {
+        // Chama o método para atualizar o last_reset_search_date e o monthly_search_count, se necessário
+        $this->updateSearchResetDate($user);
+
         // Supondo que $user['plan']['type'] contenha o tipo do plano do usuário
         $userPlan = $user['plan']['type'];
 
@@ -58,6 +68,76 @@ class Rules
         } else {
             echo "Erro ao obter o plano do usuário.";
             exit;
+        }
+    }
+
+    public function updateSearchResetDate($user)
+    {
+        // Verifica se o campo 'start_date' está presente
+        if (!isset($user['plan']['start_date'])) {
+            throw new Exception("Campo 'start_date' não está presente ou tem um formato incorreto.");
+        }
+
+        // Converte o BSON para DateTime
+        $startDate = new MongoDB\BSON\UTCDateTime((int)$user['plan']['start_date']['$date']['$numberLong']);
+        $startDateTime = $startDate->toDateTime();
+
+        // Obtém a data atual (UTC)
+        $currentDate = new DateTime('now', new DateTimeZone('UTC'));
+
+        // Se não existir last_reset_search_date, ele será igual ao start_date
+        if (!isset($user['last_reset_search_date'])) {
+            // Debug: Verifique se o _id é um ObjectId válido
+            if (!isset($user['_id']['$oid']) || !preg_match('/^[0-9a-f]{24}$/', $user['_id']['$oid'])) {
+                throw new Exception("ID do usuário não é válido.");
+            }
+
+            // Atualiza o campo last_reset_search_date com o valor de start_date
+            $this->collection->updateOne(
+                ['_id' => new MongoDB\BSON\ObjectId($user['_id']['$oid'])], // Converte para ObjectId
+                ['$set' => ['last_reset_search_date' => $startDate]]
+            );
+
+            return;
+        }
+
+        // Converte last_reset_search_date para DateTime
+        if (isset($user['last_reset_search_date']['$date']['$numberLong'])) {
+            $lastResetSearchDate = new MongoDB\BSON\UTCDateTime((int)$user['last_reset_search_date']['$date']['$numberLong']);
+            $lastResetSearchDateTime = $lastResetSearchDate->toDateTime();
+        } else {
+            throw new Exception("Campo 'last_reset_search_date' não está presente ou tem um formato incorreto.");
+        }
+
+        // Comparações de data para determinar se o reset é necessário
+        $startDay = (int)$startDateTime->format('d');
+        $currentDay = (int)$currentDate->format('d');
+        $currentMonth = (int)$currentDate->format('m');
+        $currentYear = (int)$currentDate->format('Y');
+
+        // Lógica para determinar o mês a ser usado na comparação
+        $tempMonth = ($currentDay < $startDay) ? $currentMonth - 1 : $currentMonth;
+
+        // Corrige o mês se for menor que 1
+        if ($tempMonth < 1) {
+            $tempMonth = 12;
+            $currentYear--; // Decrementa o ano se voltarmos para dezembro
+        }
+
+        // Verifica se a data de reset precisa ser atualizada
+        $comparisonDate = new DateTime("{$currentYear}-{$tempMonth}-{$startDay}", new DateTimeZone('UTC'));
+
+        if ($lastResetSearchDateTime < $comparisonDate) {
+            // Atualiza o last_reset_search_date e zera monthly_search_count
+            $this->collection->updateOne(
+                ['_id' => new MongoDB\BSON\ObjectId($user['_id']['$oid'])], // Converte para ObjectId
+                [
+                    '$set' => [
+                        'last_reset_search_date' => new MongoDB\BSON\UTCDateTime($currentDate->getTimestamp() * 1000), // Converte para BSON
+                        'monthly_search_count' => 0 // Zera a contagem de pesquisas mensais
+                    ]
+                ]
+            );
         }
     }
 

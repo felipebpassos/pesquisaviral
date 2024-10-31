@@ -41,7 +41,7 @@
 
     <aside>
         <a class="logo" href="<?php echo BASE_URL; ?>search/">
-            <img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="Logo">
+            <img src="<?php echo BASE_URL; ?>public/img/logo-nova.png" alt="Logo">
         </a>
         <nav>
             <ul>

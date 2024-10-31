@@ -3,15 +3,41 @@ header {
     padding-bottom: 20px;
 }
 
-#results-container .card {width: 180px; display: inline-block;}
+#results-container {
+    align-items: flex-start;
+    display: flex;
+    width: 100%;
+}
 
-#results-container .card img {width: 100%;}
+#results-container .card {
+    min-width: 180px;
+    max-width: 180px;
+    max-height: 260px;
+    min-height: 260px;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+}
 
-#results-container .card-text {font-size: 12px;}
+#results-container .card img {
+    width: 100%;
+}
 
-#results-container .card-bottom {display: flex; justify-content: space-between; width: 100%; font-size: 14px;}
+#results-container .card-text {
+    font-size: 12px;
+}
 
-#results-container .card button, .profile-ig .options button {
+#results-container .card-bottom {
+    position: absolute;
+    bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 2rem);
+    font-size: 14px;
+}
+
+#results-container .card button,
+.profile-ig .options button {
     background-color: #ffffff;
     color: #FF1493;
     padding: 5px 8px;
@@ -31,24 +57,28 @@ header {
     margin-left: 20px;
 }
 
-#results-container .card button:hover, .profile-ig .options button:hover {
+#results-container .card button:hover,
+.profile-ig .options button:hover {
     background-color: #FF1493;
     color: #FFFFFF;
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
 }
 
-.profile-ig .options button svg, .profile-ig .options button i {
+.profile-ig .options button svg,
+.profile-ig .options button i {
     margin-right: 5px;
 }
 
-#results-container .card button svg, .profile-ig .options button svg {
+#results-container .card button svg,
+.profile-ig .options button svg {
     transform: translateY(-2px);
     margin-right: 5px;
     transition: all 0.5s ease;
     fill: #FF1493;
 }
 
-#results-container .card button:hover svg, .profile-ig .options button:hover svg {
+#results-container .card button:hover svg,
+.profile-ig .options button:hover svg {
     fill: #FFFFFF;
 }
 
@@ -56,16 +86,20 @@ header {
     background-color: #FF1493 !important;
 }
 
+.estimated-time {
+    font-size: 13px;
+}
+
 .top-options {
     display: flex;
 }
 
-.top-options form {
+.top-options .form-pesquisar {
     display: flex;
     width: 100%;
 }
 
-.top-options form input {
+.top-options .form-pesquisar input {
     flex: 1;
     height: 40px;
     margin-right: 10px;
@@ -181,7 +215,9 @@ header {
     box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.1);
 }
 
-#results-container {
+#results-container-posts {
+    align-items: flex-start;
+    display: flex;
     width: 100%;
     justify-content: space-between;
 }

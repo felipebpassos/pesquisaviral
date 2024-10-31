@@ -109,7 +109,7 @@ class searchController extends Controller
         $data['description'] = '';
         $data['styles'] = array('search', 'verificador');
         $data['scripts_head'] = array('Config');
-        $data['scripts_body'] = array('posts', 'mostrar-mais', 'verificarConta');
+        $data['scripts_body'] = array('posts', 'mostrar-mais', 'verificarConta', 'send-search');
 
         //load view
         $this->loadTemplates($template, $data);
@@ -161,6 +161,17 @@ class searchController extends Controller
                 return;
             }
 
+            // Define a chave do cache para o usuário
+            $cacheKey = 'profileInfo_' . $_SESSION['email'];
+
+            // Verifica se já existe cache para este usuário
+            $cachedData = $this->retrieveFromCache($cacheKey);
+            if ($cachedData) {
+                http_response_code(409); // Conflict
+                echo json_encode(['status' => 'error', 'code' => 409, 'message' => 'Pesquisa em andamento. Por favor, aguarde antes de iniciar uma nova pesquisa.']);
+                return;
+            }
+
             // Inicia a pesquisa e retorna as informações iniciais
             $profileInfo = $api->getProfileInfo($username);
 
@@ -171,10 +182,7 @@ class searchController extends Controller
                 return;
             }
 
-            // Cria um identificador único para associar as informações do perfil com o usuário do aplicativo
-            $cacheKey = 'profileInfo_' . $_SESSION['email'];
-
-            // Armazena as informações do perfil em cache associadas ao usuário do aplicativo
+            // Armazena as informações do perfil em cache
             $this->storeInCache($cacheKey, $profileInfo);
 
             // Inicia o processo assíncrono de coleta de mídias
@@ -186,6 +194,25 @@ class searchController extends Controller
             http_response_code(405); // Method Not Allowed
             echo json_encode(['status' => 'error', 'code' => 405, 'message' => 'Método de requisição inválido.']);
         }
+    }
+
+    // Método para recuperar dados do cache
+    private function retrieveFromCache($cacheKey)
+    {
+        // Conecta ao servidor Redis usando variáveis de ambiente ou localhost como padrão
+        $redisHost = getenv('REDIS_HOST') ?: 'localhost';
+        $redisPort = getenv('REDIS_PORT') ?: 6379;
+
+        $redis = new Client([
+            'scheme' => 'tcp',
+            'host' => $redisHost,
+            'port' => $redisPort,
+        ]);
+
+        // Verifica se a chave existe no cache
+        $cachedData = $redis->get($cacheKey);
+
+        return $cachedData ? json_decode($cachedData, true) : null;
     }
 
     // Método para armazenar dados em cache
@@ -204,8 +231,28 @@ class searchController extends Controller
         // Converte os dados em JSON
         $jsonData = json_encode($data);
 
-        // Armazena os dados em cache com um tempo de expiração de 1 hora (3600 segundos)
-        $redis->setex($cacheKey, 3600, $jsonData);
+        // Armazena os dados em cache com um tempo de expiração de 25 min (1500 segundos)
+        $redis->setex($cacheKey, 1500, $jsonData);
+    }
+
+    // Método para verificar se há pesquisa em andamento e retornar informações do perfil
+    public function checkSearch()
+    {
+
+        $cacheKey = 'profileInfo_' . $_SESSION['email'];
+
+        // Tenta recuperar dados do cache
+        $cachedData = $this->retrieveFromCache($cacheKey);
+
+        // Se houver dados no cache, retorna as informações do perfil
+        if ($cachedData) {
+            http_response_code(200); // OK
+            echo json_encode(['status' => 'success', 'code' => 200, 'message' => 'Pesquisa em andamento encontrada no cache.', 'data' => $cachedData]);
+            return $cachedData;
+        }
+
+        // Caso contrário, não há pesquisa em andamento, e o método retorna null
+        return null;
     }
 
     // Método para retornar as informações do perfil ao usuário
@@ -221,8 +268,15 @@ class searchController extends Controller
     public function setQueue($user, $username)
     {
         try {
-            // Conecta ao servidor Redis
-            $redis = new Client();
+            // Conecta ao servidor Redis usando variáveis de ambiente ou localhost como padrão
+            $redisHost = getenv('REDIS_HOST') ?: 'localhost';
+            $redisPort = getenv('REDIS_PORT') ?: 6379;
+
+            $redis = new Client([
+                'scheme' => 'tcp',
+                'host' => $redisHost,
+                'port' => $redisPort,
+            ]);
 
             // Envia uma mensagem para a fila 'media_collection_queue'
             $message = json_encode(['user' => $user, 'username' => $username]);

@@ -44,7 +44,7 @@
         </div>
         <div class="card">
             <!-- Logo -->
-            <div class="logo"><img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="Logo"></div>
+            <div class="logo"><img src="<?php echo BASE_URL; ?>public/img/logo-nova.png" alt="Logo"></div>
             <p>Clique abaixo para entrar</p>
             <a href="<?php echo BASE_URL; ?>auth/"><button>Entrar com Facebook</button></a>
             <span>Ao continuar, você estará confirmando que leu nossos<br>Termos & Condições e Políticas de Cookies</span>

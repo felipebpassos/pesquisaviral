@@ -1,6 +1,6 @@
 $(document).ready(function() {
     // Adicionar evento de clique ao botão mostrar-mais
-    $('#results-container').on('click', '.mostrar-mais', function() {
+    $('#results-container-posts').on('click', '.mostrar-mais', function() {
         var captionBox = $(this).closest('.captionBox');
         var caption = captionBox.find('.caption');
         var fade = captionBox.find('.fade-bottom');
