@@ -115,28 +115,6 @@ class searchController extends Controller
         $this->loadTemplates($template, $data);
     }
 
-    public function processing()
-    {
-        $api = new API($this->access_token, $this->user_id);
-
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-            $username = isset($_POST["account-name"]) ? $_POST["account-name"] : '';
-
-            if (!empty($username)) {
-
-                $_SESSION['username'] = $username;
-                $_SESSION['results'] = $api->getAccountData($username);
-
-                header('Location: ' . BASE_URL . 'search/result/' . $username);
-                exit(); // Certifica-se de que o script seja encerrado após o redirecionamento
-
-            } else {
-                echo 'ERRO';
-            }
-        }
-    }
-
     // Método para iniciar a pesquisa
     public function startSearch()
     {
