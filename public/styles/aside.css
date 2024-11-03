@@ -7,6 +7,18 @@ aside {
     height: 100vh;
     z-index: 999;
     box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    aside {
+        transform: translateX(-105%);
+    }
+}
+
+/* Estilo para o aside expandido */
+aside.expandido {
+    transform: translateX(0);
 }
 
 .logo {

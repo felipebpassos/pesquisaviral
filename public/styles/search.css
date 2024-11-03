@@ -4,8 +4,6 @@ header {
 }
 
 #results-container {
-    align-items: flex-start;
-    display: flex;
     width: 100%;
 }
 
@@ -15,6 +13,7 @@ header {
     max-height: 260px;
     min-height: 260px;
     margin-right: 10px;
+    margin-bottom: 20px;
     display: inline-block;
     position: relative;
 }
@@ -126,8 +125,17 @@ header {
 .profile-ig-picture {
     border-radius: 50%;
     height: 100px;
-    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
     overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .profile-ig-picture {
+        height: 80px;
+        min-width: 80px;
+        max-width: 80px;
+    }
 }
 
 .profile-ig-picture img {
@@ -145,6 +153,12 @@ header {
     margin-right: 20px;
 }
 
+@media (max-width: 768px) {
+    .bio p {
+        font-size: 12px;
+    }
+}
+
 .bio a {
     color: rgb(120, 120, 120);
 }
@@ -160,6 +174,7 @@ header {
     max-width: 360px !important;
     height: 120px;
     padding: 10px 20px;
+    margin-bottom: 20px;
 }
 
 .metricBox .title {
@@ -191,15 +206,32 @@ header {
     color: rgb(130, 130, 130);
 }
 
+@media (max-width: 768px) {
+    .metricBox h5 {
+        font-size: 14px;
+    }
+    
+    .metricBox span {
+        font-size: 12px;
+    }
+}
+
 .order-options {
     display: flex;
     margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+    .order-options {
+        display: block;
+    }
 }
 
 .selectBox {
     display: flex;
     flex-direction: column;
     margin-right: 40px;
+    margin-bottom: 20px;
 }
 
 .selectBox label {
@@ -223,7 +255,7 @@ header {
 }
 
 .posts {
-    padding-top: 40px;
+    padding-top: 20px;
 }
 
 .post-container {

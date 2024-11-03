@@ -11,7 +11,7 @@
     echo isset($description) && !empty($description) ? '<meta name="description" content="' . $description . '">' : '';
     ?>
     <title><?php echo $title; ?></title>
-    <link rel="icon" href="<?php echo BASE_URL; ?>public/img/icone.ico">
+    <link rel="icon" href="<?php echo BASE_URL; ?>public/img/favicon.ico">
 
     <!-- ... estilos ... -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/styles/default.css">

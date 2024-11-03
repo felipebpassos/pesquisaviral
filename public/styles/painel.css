@@ -23,6 +23,57 @@ body {
     color: #ff67b8;
 }
 
+/* Estilos para o header */
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* Alinha o conteúdo à direita */
+    visibility: hidden; /* Oculta o header inicialmente */
+    padding: 20px 25px;
+    z-index: 999;
+}
+
+/* Estilos para o botão de toggle */
+.menu-toggle {
+    background-color: #ccc; /* Círculo cinza */
+    border: none;
+    border-radius: 50%; /* Torna o botão circular */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Estilos para o ícone */
+.menu-toggle i {
+    font-size: 18px;
+    color: #333;
+}
+
+/* Media query para telas menores que 768px */
+@media (max-width: 768px) {
+    .header {
+        visibility: visible; /* Exibe o header em telas menores que 768px */
+    }
+}
+
+/* Estilo para o overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; /* Inicialmente oculto */
+    z-index: 10;
+}
+
 main {
     position: relative;
     margin-left: 220px;
@@ -33,6 +84,13 @@ main {
     background-color: rgb(248, 248, 248);
     padding: 30px 50px;
     padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    main {
+        margin-left: 0;
+        padding-top: 90px;
+    }
 }
 
 .welcome h1 {

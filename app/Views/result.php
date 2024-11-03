@@ -51,7 +51,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="options">
+                    <div class="options" style="display: none;">
                         <button class="analysis-btn" data-id="<?php echo $username; ?>">
                             <svg width="18" height="18" viewBox="0 0 256 256" xml:space="preserve">
                                 <defs>
@@ -121,19 +121,19 @@
                                     <p>Likes</p>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>
                                             <?php echo formatarNumeroAbreviado($maxLikes); ?>
                                         </h5>
                                         <span>Máximo</span>
                                     </div>
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>
                                             <?php echo formatarNumeroAbreviado($totalLikes); ?>
                                         </h5>
                                         <span>Total</span>
                                     </div>
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>
                                             <?php echo ($countMedia > 0) ? formatarNumeroAbreviado($totalLikes / $countMedia) : "-"; ?>
                                         </h5>
@@ -149,19 +149,19 @@
                                     <p>Comentários</p>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>
                                             <?php echo formatarNumeroAbreviado($maxComments); ?>
                                         </h5>
                                         <span>Máximo</span>
                                     </div>
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>
                                             <?php echo formatarNumeroAbreviado($totalComments); ?>
                                         </h5>
                                         <span>Total</span>
                                     </div>
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>
                                             <?php echo ($countMedia > 0) ? formatarNumeroAbreviado($totalComments / $countMedia) : "-"; ?>
                                         </h5>
@@ -177,17 +177,17 @@
                                     <p>Engajamento</p>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>
                                             <?php echo number_format($maxER, 2); ?> %
                                         </h5>
                                         <span>Máximo</span>
                                     </div>
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>N/A</h5>
                                         <span>Total</span>
                                     </div>
-                                    <div class="col-md-4" style="text-align: center;">
+                                    <div class="col-4" style="text-align: center;">
                                         <h5>
                                             <?php echo ($countMedia > 0) ? number_format(($totalER / $countMedia), 2) : "-"; ?> %
                                         </h5>
@@ -224,7 +224,7 @@
                     <option value="CAROUSEL_ALBUM">Carrossel</option>
                 </select>
             </div>
-            <div class="selectBox">
+            <div class="selectBox" style="display: none;">
                 <label for="time-select">Período de tempo:</label>
                 <select id="time-select">
                     <option value="always">Sempre</option>

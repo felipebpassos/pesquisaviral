@@ -11,7 +11,7 @@
     <title>
         <?php echo $title; ?>
     </title>
-    <link rel="icon" href="<?php echo BASE_URL; ?>public/img/icone.ico">
+    <link rel="icon" href="<?php echo BASE_URL; ?>public/img/favicon.ico">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
@@ -51,7 +51,7 @@
         </div>
     </main>
 
-    <a href="https://api.whatsapp.com/send?phone=5579981358136" class="whatsapp-button" target="_blank">
+    <a href="https://api.whatsapp.com/send?phone=5579996010545" class="whatsapp-button" target="_blank">
         <img src="<?php echo BASE_URL; ?>public/img/msg.png" alt="Ícone do WhatsApp">
     </a>
 

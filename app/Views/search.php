@@ -41,8 +41,8 @@
                     <img src="<?php echo $userData['profile_picture_url']; ?>" class="card-img-top" alt="Imagem de Perfil">
                     <p class="card-text">@<?php echo $username; ?></p>
                     <div class="card-bottom">
-                        <button class="result-btn" data-id="<?php echo $username; ?>"><i class="fa-solid fa-images"></i> Resultado</button>
-                        <button class="analysis-btn" data-id="<?php echo $username; ?>">
+                        <button class="result-btn" data-id="<?php echo $username; ?>" style="width: 100%;"><i class="fa-solid fa-images"></i> Resultado</button>
+                        <button class="analysis-btn" data-id="<?php echo $username; ?>" style="display: none;">
                             <svg width="18" height="18" viewBox="0 0 256 256" xml:space="preserve">
                                 <defs>
                                 </defs>

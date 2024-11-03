@@ -45,6 +45,8 @@ class API
         $data = json_decode($response, true);
 
         if (isset($data['business_discovery'])) {
+            // Adiciona o 'username' ao array 'business_discovery'
+            $data['business_discovery']['username'] = $username;
             return $data['business_discovery'];
         } else {
             return [];
@@ -58,8 +60,8 @@ class API
         // Primeira chamada para obter um conjunto de mídia
         $mediaSet = $this->getMediaSet($username);
         //if (!$mediaSet) {
-            //var_dump($allMedia);
-            //exit;
+        //var_dump($allMedia);
+        //exit;
         //}
 
         if ($mediaSet) {
@@ -76,8 +78,8 @@ class API
                     // Obtém o próximo conjunto de mídia usando o cursor
                     $mediaSet = $this->getMediaSet($username, $afterCursor);
                     //if (!$mediaSet) {
-                        //var_dump($allMedia);
-                        //exit;
+                    //var_dump($allMedia);
+                    //exit;
                     //}
                 } else {
                     // Se não houver mais páginas, encerra o loop
@@ -86,11 +88,9 @@ class API
             } while (isset($mediaSet['paging']['cursors']['after'])); // Continue enquanto houver mais páginas
 
             return $allMedia;
-
         } else {
             return false;
         }
-
     }
 
     public function getMediaSet($username, $afterCursor = null)
@@ -114,7 +114,7 @@ class API
         $data = json_decode($response, true);
 
         //if (!isset($data["business_discovery"]["media"])) {
-           // print_r($data);
+        // print_r($data);
         //}
 
         if (isset($data["business_discovery"]["media"])) {

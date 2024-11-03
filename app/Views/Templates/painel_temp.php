@@ -11,7 +11,7 @@
     <title>
         <?php echo $title; ?>
     </title>
-    <link rel="icon" href="<?php echo BASE_URL; ?>public/img/icone.ico">
+    <link rel="icon" href="<?php echo BASE_URL; ?>public/img/favicon.ico">
 
     <!-- ... estilos ... -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/styles/default.css">
@@ -39,6 +39,15 @@
 
 <body>
 
+    <header class="header">
+        <button class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Overlay para cobrir a tela -->
+    <div class="overlay" id="overlay"></div>
+
     <aside>
         <a class="logo" href="<?php echo BASE_URL; ?>search/">
             <img src="<?php echo BASE_URL; ?>public/img/logo-nova.png" alt="Logo">
@@ -48,7 +57,7 @@
                 <li><a <?php echo ($_SESSION['page'] == 'search') ? 'class="atual"' : ''; ?> href="<?php echo BASE_URL; ?>search/">
                         <i class="fa-solid fa-users"></i> Pesquisas
                     </a></li>
-                <li><a <?php echo ($_SESSION['page'] == 'about') ? 'class="atual"' : ''; ?> href="<?php echo BASE_URL; ?>painel/about">
+                <li style="display: none;"><a <?php echo ($_SESSION['page'] == 'about') ? 'class="atual"' : ''; ?> href="<?php echo BASE_URL; ?>painel/about">
                         <i class="fa-solid fa-circle-question"></i> Sobre
                     </a></li>
                 <li><a href="<?php echo BASE_URL; ?>logout/">
@@ -64,7 +73,7 @@
 
     ?>
 
-    <a href="https://api.whatsapp.com/send?phone=5579981358136" class="whatsapp-button" target="_blank">
+    <a href="https://api.whatsapp.com/send?phone=5579996010545" class="whatsapp-button" target="_blank">
         <img src="<?php echo BASE_URL; ?>public/img/msg.png" alt="Ícone do WhatsApp">
     </a>
 

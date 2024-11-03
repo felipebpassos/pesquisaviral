@@ -1,6 +1,11 @@
 // Função de validação do nome de usuário
 function validateInstagramUsername(username) {
-    var regex = /^(?!.*\.\.)(?!.*\.\.)(?!.*__)(?!.*\.\.$)(?!.*__$)(?!^\.)[^.][\w.]{0,28}[\w]$/;
+    // Remove o caractere @ do início, se existir
+    if (username.startsWith('@')) {
+        username = username.slice(1);
+    }
+
+    var regex = /^(?!.*\.\.)(?!.*__)(?!.*\.\.$)(?!.*__$)(?!^\.)[^.][\w.]{0,28}[\w]$/;
 
     if (!regex.test(username)) {
         console.error('Erro: O nome de usuário é inválido.');
@@ -31,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Chama a função para verificar e criar o card se necessário
-    checkSearchAndCreateCard('exemplo');
+    checkSearchAndCreateCard();
 });
 
 // Função para iniciar a pesquisa
@@ -47,8 +52,11 @@ function startSearch(accountName) {
         method: 'POST',
         data: { 'account-name': accountName },
         success: function (response) {
-            console.log(response);
-            createResultCard(response, accountName);
+            if (response.username) {
+                createResultCard(response, accountName);
+            } else {
+                alert('Usuário não encontrado.');
+            }
         },
         error: function (xhr, status, error) {
             let errorMessage;
@@ -86,7 +94,7 @@ function startSearch(accountName) {
     });
 }
 
-function checkSearchAndCreateCard(accountName) {
+function checkSearchAndCreateCard() {
     $.ajax({
         url: config.BASE_URL + 'search/checkSearch',
         type: 'GET',
@@ -95,13 +103,9 @@ function checkSearchAndCreateCard(accountName) {
                 // Tenta analisar a resposta como JSON
                 response = typeof response === "string" ? JSON.parse(response) : response;
                 
-                console.log("Response:", response);
-                console.log("Status Type:", typeof response.status);
-                console.log("Data Type:", typeof response.data);
-                
                 if (response.status === 'success' && response.data) {
                     // Cria o card se houver pesquisa em andamento
-                    createResultCard(response.data, accountName);
+                    createResultCard(response.data, response.data.username);
                 } else {
                     console.log('Nenhuma pesquisa em andamento encontrada.');
                 }

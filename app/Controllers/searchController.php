@@ -66,7 +66,7 @@ class searchController extends Controller
         $data['description'] = '';
         $data['styles'] = array('search', 'verificador');
         $data['scripts_head'] = array('Config');
-        $data['scripts_body'] = array('assync-profile-search', 'results', 'verificarConta');
+        $data['scripts_body'] = array('assync-profile-search', 'results', 'verificarConta', 'toggle-menu');
 
         //load view
         $this->loadTemplates($template, $data);
@@ -109,7 +109,7 @@ class searchController extends Controller
         $data['description'] = '';
         $data['styles'] = array('search', 'verificador');
         $data['scripts_head'] = array('Config');
-        $data['scripts_body'] = array('posts', 'mostrar-mais', 'verificarConta', 'send-search');
+        $data['scripts_body'] = array('posts', 'mostrar-mais', 'verificarConta', 'send-search', 'toggle-menu');
 
         //load view
         $this->loadTemplates($template, $data);
