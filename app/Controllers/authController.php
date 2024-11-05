@@ -108,6 +108,8 @@ class authController extends Controller
             } catch (Exception $e) {
                 // Exibir mensagem genérica, sem expor detalhes
                 echo "Ocorreu um erro. Por favor, tente novamente.";
+                // Exibir detalhes do erro
+                echo $e->getMessage();
                 // Opcional: logar detalhes do erro em um arquivo seguro
                 error_log($e->getMessage()); // Opcional: registrar o erro para depuração
             }

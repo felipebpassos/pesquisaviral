@@ -9,6 +9,6 @@ include "./app/Core/Config.php";
 include "./app/Helpers/firstName.php"; 
 include "./app/Helpers/formatarNumero.php"; 
 include "./app/Helpers/formatarNumeroAbreviado.php";
-include "./app/Helpers/logMessage.php";
+include "./app/Helpers/sanitizeInput.php"; 
 
 $core = new Core();

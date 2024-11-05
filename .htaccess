@@ -3,5 +3,5 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 # Roteamento para o arquivo "pesquisaviral/index.php" para qualquer URL
-RewriteRule ^(.*)$ /pesquisaviral/index.php?pag=$1 [QSA,L]
+RewriteRule ^(.*)$ /index.php?pag=$1 [QSA,L]
 

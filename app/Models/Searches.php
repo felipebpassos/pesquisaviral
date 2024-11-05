@@ -14,6 +14,11 @@ class Searches
         $this->collection = $this->con->searches; // Nome da coleção 'searches'
     }
 
+    public function __destruct()
+    {
+        $this->con = null;
+    }
+
     public function registerSearch($username, $profilePictureUrl)
     {
         // Verifica se o perfil de usuário já existe na coleção de pesquisas

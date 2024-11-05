@@ -2,12 +2,12 @@
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use MongoDB\Client;
 use Dotenv\Dotenv;
 
-class Conexao {
-
+class Conexao
+{
     private static $instancia;
+    private static $database;
 
     private function __construct() {}
 
@@ -18,29 +18,21 @@ class Conexao {
         $dotenv->load();
 
         // Parâmetros de conexão com o MongoDB, extraídos do .env
-        $uri = $_ENV['MONGODB_URI']; // URI de conexão com o servidor MongoDB
-        $dbname = $_ENV['MONGODB_DB']; // Nome do banco de dados
+        $uri = $_ENV['MONGODB_URI'];
+        $dbname = $_ENV['MONGODB_DB'];
 
         // Verifica se a instância já foi criada
         if (!isset(self::$instancia)) {
-
-            // Tenta criar a conexão com o MongoDB
             try {
-                self::$instancia = new Client($uri);
+                self::$instancia = new MongoDB\Client($uri);
+                self::$database = self::$instancia->selectDatabase($dbname);
             } catch (Exception $error) {
-                // Em caso de erro, exibe uma mensagem
-                echo 'Erro: ' . $error->getMessage();
+                echo 'Erro: Ocorreu um problema ao conectar ao MongoDB.';
+                error_log($error->getMessage());
                 return null;
             }
         }
 
-        // Verifica se a conexão foi criada com sucesso
-        if (self::$instancia) {
-            // Retorna a instância da conexão com o MongoDB e seleciona o banco de dados
-            return self::$instancia->selectDatabase($dbname);
-        } else {
-            // Retorna null se a conexão não foi criada com sucesso
-            return null;
-        }
+        return self::$database;
     }
 }

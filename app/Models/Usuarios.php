@@ -11,7 +11,13 @@ class Usuarios
     public function __construct()
     {
         $this->con = Conexao::getConexao();
+        
         $this->collection = $this->con->users; // Nome da coleção 'users'
+    }
+
+    public function __destruct()
+    {
+        $this->con = null;
     }
 
     // Verificar se o usuário já existe pelo e-mail

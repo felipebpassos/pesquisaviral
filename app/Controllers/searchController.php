@@ -2,47 +2,68 @@
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use Predis\Client;
+use Dotenv\Dotenv;
 
 class searchController extends Controller
 {
-
     private $sessao;
     private $usersModel;
+    private $searchesModel;
     private $rules;
     private $user;
     private $plan;
     private $access_token;
     private $user_id;
+    private $redis;
 
     public function __construct()
     {
+        // Carregar variáveis de ambiente do arquivo .env
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+        $dotenv->load();
+
         session_name('pesquisaviral');
         session_start();
 
-        // Instanciar a classe Sessao
+        // Instanciar as classes Sessao e Rules
         $this->sessao = new Sessao();
-        // Instanciar a classe Rules
         $this->rules = new Rules();
-        // Instancia o modelo de usuários
         $this->usersModel = new Usuarios();
+        $this->searchesModel = new Searches();
 
-        // Verificar se a sessão existe e está correta
+        // Verificar a sessão do usuário
         if (!isset($_SESSION['access_token']) || !$this->sessao->validarToken($_SESSION['access_token']) || !isset($_SESSION['email'])) {
-            // Se a sessão não estiver correta, redirecionar para a página de login
             session_destroy();
             header("Location: " . BASE_URL . "login");
             exit();
         } else {
-            // Obtém os dados do usuário
-            // Decodifique o JSON para uma matriz associativa
             $user_data = $this->usersModel->getUsuario($_SESSION['email']);
             $this->user = json_decode($user_data, true);
-
             $this->plan = $this->rules->getPlan($this->user);
 
-            $this->access_token = 'EAAJog2OT3zQBO6qZCz1q5QR5ezZBbF1TF9Lfh8eQSzYZBHvmoC6AhIJtuswhoyR05g1E34MwbbWW8ZB381JsWwzAytc5j8sLWuHRoMfrYdxQo5ngkz1V8wqhINTXwFq8JLtq2sxdL3WK2NZC5FYh0s8LDHZBUM2zEOXlZB6S0ipHhMbPrqVG6OEZBgXB6ydAyNQJl4kBXD4x';
-            $this->user_id = '17841461803934118';
+            $this->access_token = $_ENV['ACCESS_TOKEN'];
+            $this->user_id = $_ENV['USER_ID'];
+        }
+    }
+
+    private function connectToRedis()
+    {
+        // Obter a URL do Redis a partir das variáveis de ambiente
+        $redisUrl = $_ENV['REDIS_URL'];
+
+        // Verifica se a URL do Redis está definida
+        if (empty($redisUrl)) {
+            throw new Exception('A URL do Redis não está definida nas variáveis de ambiente.');
+        }
+
+        // Criar o cliente Redis e conectar
+        try {
+            $redis = new Predis\Client($redisUrl); // Certifique-se de que está usando Predis ou outra biblioteca
+            $redis->connect(); // Conectar-se ao Redis
+            return $redis;
+        } catch (Exception $e) {
+            // Em caso de erro, lançar uma exceção com uma mensagem detalhada
+            throw new Exception('Erro ao conectar ao Redis: ' . $e->getMessage());
         }
     }
 
@@ -115,156 +136,178 @@ class searchController extends Controller
         $this->loadTemplates($template, $data);
     }
 
-    // Método para iniciar a pesquisa
     public function startSearch()
     {
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        try {
 
-            // Captura o nome de usuário do formulário
-            $username = isset($_POST["account-name"]) ? trim($_POST["account-name"]) : '';
+            if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+                throw new Exception('Método de requisição inválido.', 405);
+            }
 
-            // Verifica se o nome de usuário foi fornecido
+            $username = isset($_POST["account-name"]) ? sanitizeInput($_POST["account-name"]) : '';
             if (empty($username)) {
-                http_response_code(400); // Bad Request
-                echo json_encode(['status' => 'error', 'code' => 400, 'message' => 'Nome de usuário não foi fornecido.']);
-                return;
+                throw new Exception('Nome de usuário não foi fornecido.', 400);
+            }
+
+            if (!$this->rules->verifySearchLimits($this->user)) {
+                throw new Exception('Limite de pesquisas atingido.', 403);
+            }
+
+            $this->redis = $this->connectToRedis();
+            if (!$this->redis) {
+                throw new Exception("Falha ao conectar ao Redis");
+            }
+
+            $cacheKey = 'profileInfo_' . $_SESSION['email'];
+            $cachedData = $this->retrieveFromCache($cacheKey);
+
+            if ($cachedData) {
+                throw new Exception('Pesquisa em andamento.', 409);
             }
 
             $api = new API($this->access_token, $this->user_id);
-
-            // Verifica se o usuário tem permissão para continuar a pesquisa com base no limite de buscas
-            if (!$this->rules->verifySearchLimits($this->user)) {
-                http_response_code(403); // Forbidden
-                echo json_encode(['status' => 'error', 'code' => 403, 'message' => 'Limite de pesquisas atingido. Por favor, atualize seu plano.']);
-                return;
-            }
-
-            // Define a chave do cache para o usuário
-            $cacheKey = 'profileInfo_' . $_SESSION['email'];
-
-            // Verifica se já existe cache para este usuário
-            $cachedData = $this->retrieveFromCache($cacheKey);
-            if ($cachedData) {
-                http_response_code(409); // Conflict
-                echo json_encode(['status' => 'error', 'code' => 409, 'message' => 'Pesquisa em andamento. Por favor, aguarde antes de iniciar uma nova pesquisa.']);
-                return;
-            }
-
-            // Inicia a pesquisa e retorna as informações iniciais
             $profileInfo = $api->getProfileInfo($username);
 
-            // Verifica se as informações do perfil foram obtidas com sucesso
             if ($profileInfo === false) {
-                http_response_code(404); // Not Found
-                echo json_encode(['status' => 'error', 'code' => 404, 'message' => 'Erro ao obter as informações do perfil.']);
-                return;
+                throw new Exception('Erro ao obter as informações do perfil.', 404);
             }
 
-            // Armazena as informações do perfil em cache
             $this->storeInCache($cacheKey, $profileInfo);
-
-            // Inicia o processo assíncrono de coleta de mídias
             $this->setQueue($_SESSION['email'], $username);
 
-            // Retorna as informações do perfil ao usuário
             $this->returnProfileInfo($profileInfo);
-        } else {
-            http_response_code(405); // Method Not Allowed
-            echo json_encode(['status' => 'error', 'code' => 405, 'message' => 'Método de requisição inválido.']);
+        } catch (Exception $e) {
+            http_response_code($e->getCode());
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'error',
+                'code' => $e->getCode(),
+                'message' => $e->getMessage()
+            ]);
         }
     }
 
-    // Método para recuperar dados do cache
+    public function checkSearch()
+    {
+        try {
+            // Conectar ao Redis
+            $this->redis = $this->connectToRedis();
+            if (!$this->redis) {
+                throw new Exception("Falha ao conectar ao Redis");
+            }
+
+            $finishedKey = 'finished_' . $_SESSION['email'];
+            $profileKey = 'profileInfo_' . $_SESSION['email'];
+
+            // Verifica se a pesquisa foi finalizada
+            $finishedData = $this->retrieveFromCache($finishedKey);
+
+            if ($finishedData) {
+
+                $this->removeFromCache('finished_' . $_SESSION['email']);
+
+                http_response_code(200); // OK
+                echo json_encode([
+                    'status' => 'finished',
+                    'code' => 200,
+                    'message' => 'Pesquisa concluída encontrada no cache.',
+                    'data' => $finishedData
+                ]);
+
+                // Salva resultados da pesquisa na coleção de usuários
+                $result = $this->usersModel->saveSearchResult(
+                    $_SESSION['email'],
+                    $finishedData['username'],
+                    $finishedData['merged_data']
+                );
+
+                if ($result) {
+                    // Incrementa o número de pesquisas mensais feitas pelo usuário
+                    $this->usersModel->incrementUserSearchCount($_SESSION['email']);
+
+                    // Registra a pesquisa no histórico de pesquisas
+                    if (isset($finishedDataArray['merged_data']['profile_picture_url'])) {
+                        $this->searchesModel->registerSearch(
+                            $finishedData['username'],
+                            $finishedData['merged_data']['profile_picture_url']
+                        );
+                    }
+                } else {
+                    error_log("Error saving search results for user: " . $_SESSION['email']);
+                }
+
+                return $finishedData;
+            }
+
+            // Verifica se a pesquisa está em andamento
+            $profileData = $this->retrieveFromCache($profileKey);
+            if ($profileData) {
+                http_response_code(200); // OK
+                echo json_encode([
+                    'status' => 'in_progress',
+                    'code' => 200,
+                    'message' => 'Pesquisa em andamento encontrada no cache.',
+                    'data' => $profileData
+                ]);
+                return $profileData;
+            }
+
+            // Caso não haja pesquisa em andamento nem concluída, retorna null
+            http_response_code(404); // Not Found
+            echo json_encode([
+                'status' => 'not_found',
+                'code' => 404,
+                'message' => 'Nenhuma pesquisa em andamento ou concluída encontrada para o usuário.'
+            ]);
+            return null;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+
+            // Em caso de erro, retornar uma resposta de erro
+            http_response_code(500); // Internal Server Error
+            echo json_encode([
+                'status' => 'error',
+                'code' => 500,
+                'message' => 'Erro ao verificar pesquisa: ' . $e->getMessage()
+            ]);
+            return null;
+        }
+    }
+
     private function retrieveFromCache($cacheKey)
     {
-        // Conecta ao servidor Redis usando variáveis de ambiente ou localhost como padrão
-        $redisHost = getenv('REDIS_HOST') ?: 'localhost';
-        $redisPort = getenv('REDIS_PORT') ?: 6379;
-
-        $redis = new Client([
-            'scheme' => 'tcp',
-            'host' => $redisHost,
-            'port' => $redisPort,
-        ]);
-
-        // Verifica se a chave existe no cache
-        $cachedData = $redis->get($cacheKey);
-
+        $cachedData = $this->redis->get($cacheKey);
         return $cachedData ? json_decode($cachedData, true) : null;
     }
 
-    // Método para armazenar dados em cache
     private function storeInCache($cacheKey, $data)
     {
-        // Conecta ao servidor Redis usando variáveis de ambiente ou localhost como padrão
-        $redisHost = getenv('REDIS_HOST') ?: 'localhost';
-        $redisPort = getenv('REDIS_PORT') ?: 6379;
-
-        $redis = new Client([
-            'scheme' => 'tcp',
-            'host' => $redisHost,
-            'port' => $redisPort,
-        ]);
-
-        // Converte os dados em JSON
         $jsonData = json_encode($data);
-
-        // Armazena os dados em cache com um tempo de expiração de 25 min (1500 segundos)
-        $redis->setex($cacheKey, 1500, $jsonData);
+        $this->redis->setex($cacheKey, 1500, $jsonData);
     }
 
-    // Método para verificar se há pesquisa em andamento e retornar informações do perfil
-    public function checkSearch()
-    {
-
-        $cacheKey = 'profileInfo_' . $_SESSION['email'];
-
-        // Tenta recuperar dados do cache
-        $cachedData = $this->retrieveFromCache($cacheKey);
-
-        // Se houver dados no cache, retorna as informações do perfil
-        if ($cachedData) {
-            http_response_code(200); // OK
-            echo json_encode(['status' => 'success', 'code' => 200, 'message' => 'Pesquisa em andamento encontrada no cache.', 'data' => $cachedData]);
-            return $cachedData;
-        }
-
-        // Caso contrário, não há pesquisa em andamento, e o método retorna null
-        return null;
-    }
-
-    // Método para retornar as informações do perfil ao usuário
-    private function returnProfileInfo($profileInfo)
-    {
-        // Envie as informações do perfil como resposta JSON ao usuário
-        header('Content-Type: application/json');
-        echo json_encode($profileInfo);
-        exit(); // Encerre o script após enviar a resposta
-    }
-
-    // Método para iniciar o processo assíncrono de coleta de mídias
     public function setQueue($user, $username)
     {
         try {
-            // Conecta ao servidor Redis usando variáveis de ambiente ou localhost como padrão
-            $redisHost = getenv('REDIS_HOST') ?: 'localhost';
-            $redisPort = getenv('REDIS_PORT') ?: 6379;
-
-            $redis = new Client([
-                'scheme' => 'tcp',
-                'host' => $redisHost,
-                'port' => $redisPort,
-            ]);
-
-            // Envia uma mensagem para a fila 'media_collection_queue'
             $message = json_encode(['user' => $user, 'username' => $username]);
-            $redis->rpush('media_collection_queue', $message);
-
+            $this->redis->rpush('media_collection_queue', $message);
             return true;
         } catch (Exception $e) {
-            // Trata erros de conexão ou operação com o Redis
             echo 'Erro ao adicionar mensagem à fila: ' . $e->getMessage();
             return false;
         }
+    }
+
+    private function returnProfileInfo($profileInfo)
+    {
+        header('Content-Type: application/json');
+        echo json_encode($profileInfo);
+        exit();
+    }
+
+    private function removeFromCache($cacheKey)
+    {
+        // Remove os dados correspondentes ao cacheKey
+        $this->redis->del($cacheKey);
     }
 }

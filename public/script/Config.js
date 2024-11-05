@@ -1,3 +1,3 @@
 const config = {
-    BASE_URL: 'http://localhost/pesquisaviral/',
+    BASE_URL: 'https://pesquisaviral.com/',
 };

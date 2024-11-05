@@ -5,6 +5,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Predis\Client as RedisClient;
+use Dotenv\Dotenv;
 
 class Rules
 {
@@ -26,12 +27,15 @@ class Rules
     public function __construct()
     {
 
-        // Inicializa o cliente Redis usando Predis
-        $this->redis = new RedisClient([
-            'scheme' => 'tcp',
-            'host'   => '127.0.0.1',
-            'port'   => 6379,
-        ]);
+        // Carregar variáveis de ambiente do arquivo .env
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+        $dotenv->load();
+
+        $redisUrl = $_ENV['REDIS_URL'];
+
+        $this->redis = new Predis\Client($redisUrl);
+
+        $this->redis->connect();
 
         // Caminho para o arquivo plans.json
         $plansFile = __DIR__ . '/../data/plans.json';
@@ -51,6 +55,11 @@ class Rules
 
         $this->con = Conexao::getConexao();
         $this->collection = $this->con->users;
+    }
+
+    public function __destruct()
+    {
+        $this->con = null;
     }
 
     public function getPlan($user)

@@ -1,10 +1,5 @@
 // Função de validação do nome de usuário
 function validateInstagramUsername(username) {
-    // Remove o caractere @ do início, se existir
-    if (username.startsWith('@')) {
-        username = username.slice(1);
-    }
-
     var regex = /^(?!.*\.\.)(?!.*__)(?!.*\.\.$)(?!.*__$)(?!^\.)[^.][\w.]{0,28}[\w]$/;
 
     if (!regex.test(username)) {
@@ -16,11 +11,26 @@ function validateInstagramUsername(username) {
     return true;
 }
 
+// Função para tratar o username 
+function trataUsername(username) {
+    // Remove o caractere @ do início, se existir
+    if (username.startsWith('@')) {
+        username = username.slice(1);
+    }
+
+    // Converte o username para minúsculas
+    return username.toLowerCase();
+}
+
 // Manipulação do formulário de submissão
 $(document).ready(function () {
     $('#search-form').submit(function (event) {
         event.preventDefault();
         var accountName = $('#account-name').val();
+
+        // Trata o username antes de validar
+        accountName = trataUsername(accountName);
+
         if (validateInstagramUsername(accountName)) {
             startSearch(accountName);
         }
@@ -31,8 +41,13 @@ $(document).ready(function () {
 document.addEventListener('DOMContentLoaded', function () {
     var urlParams = new URLSearchParams(window.location.search);
     var profile = urlParams.get('profile');
-    if (profile && validateInstagramUsername(profile)) {
-        startSearch(profile);
+
+    // Trata o username do parâmetro GET antes de validar
+    if (profile) {
+        profile = trataUsername(profile);
+        if (validateInstagramUsername(profile)) {
+            startSearch(profile);
+        }
     }
 
     // Chama a função para verificar e criar o card se necessário
@@ -59,37 +74,8 @@ function startSearch(accountName) {
             }
         },
         error: function (xhr, status, error) {
-            let errorMessage;
-
-            // Verifica o código de status HTTP para definir a mensagem de erro adequada
-            switch (xhr.status) {
-                case 400:
-                    errorMessage = 'Erro: Nome de usuário não foi fornecido. Por favor, preencha o campo de nome de conta.';
-                    break;
-                case 403:
-                    errorMessage = 'Erro: Limite de pesquisas atingido. Atualize seu plano para continuar.';
-                    break;
-                case 404:
-                    errorMessage = 'Erro: Não foi possível obter as informações do perfil. Verifique o nome de usuário e tente novamente.';
-                    break;
-                case 409:
-                    errorMessage = 'Erro: Uma pesquisa já está em andamento para este usuário. Por favor, aguarde.';
-                    break;
-                case 405:
-                    errorMessage = 'Erro: Método de requisição inválido. Por favor, tente novamente.';
-                    break;
-                default:
-                    errorMessage = 'Erro ao iniciar a pesquisa: ';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage += xhr.responseJSON.message; // Mensagem de erro da resposta
-                    } else {
-                        errorMessage += error; // Mensagem de erro genérica
-                    }
-                    break;
-            }
-
-            alert(errorMessage); // Exibe o alerta com a mensagem de erro
-            console.error('Erro ao iniciar a pesquisa:', errorMessage);
+            console.error("Erro ao iniciar a pesquisa:", xhr.responseText || error);
+            alert("Erro ao iniciar a pesquisa: " + (xhr.responseText || error));
         }
     });
 }
@@ -98,31 +84,33 @@ function checkSearchAndCreateCard() {
     $.ajax({
         url: config.BASE_URL + 'search/checkSearch',
         type: 'GET',
-        success: function(response) {
+        success: function (response) {
             try {
-                // Tenta analisar a resposta como JSON
                 response = typeof response === "string" ? JSON.parse(response) : response;
-                
-                if (response.status === 'success' && response.data) {
-                    // Cria o card se houver pesquisa em andamento
-                    createResultCard(response.data, response.data.username);
+
+                if (response.status === 'finished' && response.data) {
+                    // Pesquisa finalizada, cria o card com botão de resultado
+                    createResultCard(response.data.merged_data, response.data.username, true);
+                } else if (response.status === 'in_progress' && response.data) {
+                    // Pesquisa em andamento, cria o card com mensagem de tempo estimado
+                    createResultCard(response.data, response.data.username, false);
                 } else {
-                    console.log('Nenhuma pesquisa em andamento encontrada.');
+                    console.log('Nenhuma pesquisa em andamento ou finalizada encontrada.');
                 }
             } catch (e) {
                 console.error("Erro ao analisar a resposta JSON:", e);
             }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             console.error('Erro ao verificar a pesquisa:', error);
         }
     });
 }
 
-function createResultCard(response, accountName) {
+function createResultCard(response, accountName, isFinished) {
     var resultsContainer = $('#results-container');
 
-    // Verifica se já existem 5 cards no container e remove o último se necessário
+    // Limita o número de cards no container a 5
     if ($('.card', resultsContainer).length >= 5) {
         $('.card:last', resultsContainer).remove();
     }
@@ -130,54 +118,30 @@ function createResultCard(response, accountName) {
     // Cria o novo card
     var card = $('<div>').addClass('card').data('accountName', accountName);
     var cardBody = $('<div>').addClass('card-body').appendTo(card);
-    
+
     // Adiciona a imagem de perfil e o nome do usuário
     $('<img>').attr('src', response.profile_picture_url).addClass('card-img-top').appendTo(cardBody);
     $('<p>').addClass('card-text').text('@' + accountName).appendTo(cardBody);
-    
-    // Exibe a mensagem de tempo estimado
-    $('<p>').addClass('estimated-time').text('A pesquisa estará pronta em aproximadamente 10 minutos.').appendTo(cardBody);
+
+    if (isFinished) {
+        // Pesquisa finalizada, exibe o botão de resultado
+        finalizeSearch(cardBody, accountName);
+    } else {
+        // Pesquisa em andamento, exibe a mensagem de tempo estimado
+        $('<p>').addClass('estimated-time').text('A pesquisa estará pronta em aproximadamente 5 minutos.').appendTo(cardBody);
+    }
 
     // Adiciona o novo card no início do container
     resultsContainer.prepend(card);
-
-    // Finaliza o card após o tempo estimado
-    setTimeout(function () {
-        finalizeSearch(cardBody, accountName);
-    }, 10 * 60 * 1000); // 10 minutos em milissegundos
-}
-
-function updateProgress(cardBody, accountName) {
-    var interval = setInterval(function () {
-        $.ajax({
-            url: config.BASE_URL + 'async/progress/',
-            method: 'GET',
-            success: function (response) {
-                console.log(response);
-                var progress = response.progress;
-                $('.progress-bar', cardBody).css('width', progress + '%');
-                if (progress === 100) {
-                    clearInterval(interval);
-                    finalizeSearch(cardBody, accountName);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Erro ao obter o progresso da pesquisa:', error);
-                clearInterval(interval);
-            }
-        });
-    }, 1000);
 }
 
 function finalizeSearch(cardBody, accountName) {
-    $('.progress', cardBody).hide();
+    // Esconde a mensagem de tempo estimado
+    $('.estimated-time', cardBody).remove();
+
+    // Cria e exibe o botão de resultado
     var cardBottom = $('<div>').addClass('card-bottom').appendTo(cardBody);
-
-    // Chama createButton com ícone para o botão de resultados
     createResultButton(accountName, cardBottom);
-
-    // Chama createAnalysisButton com SVG para o botão de análise
-    createAnalysisButton(accountName, cardBottom);
 }
 
 function createResultButton(dataId, container) {
@@ -186,25 +150,5 @@ function createResultButton(dataId, container) {
         'data-id': dataId
     }).append($('<i>').addClass('fa-solid fa-images')).append(' Resultado');
 
-    container.append(button);
-}
-
-function createAnalysisButton(dataId, container) {
-    var button = $('<button>', {
-        'class': 'analysis-btn',
-        'data-id': dataId
-    }).append(`
-        <svg width="18" height="18" viewBox="0 0 256 256" xml:space="preserve">
-            <defs>
-            </defs>
-            <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
-                <path d="M 87.994 0 H 69.342 c -1.787 0 -2.682 2.16 -1.418 3.424 l 5.795 5.795 l -33.82 33.82 L 28.056 31.196 l -3.174 -3.174 c -1.074 -1.074 -2.815 -1.074 -3.889 0 L 0.805 48.209 c -1.074 1.074 -1.074 2.815 0 3.889 l 3.174 3.174 c 1.074 1.074 2.815 1.074 3.889 0 l 15.069 -15.069 l 14.994 14.994 c 1.074 1.074 2.815 1.074 3.889 0 l 1.614 -1.614 c 0.083 -0.066 0.17 -0.125 0.247 -0.202 l 37.1 -37.1 l 5.795 5.795 C 87.84 23.34 90 22.445 90 20.658 V 2.006 C 90 0.898 89.102 0 87.994 0 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
-                <path d="M 65.626 37.8 v 49.45 c 0 1.519 1.231 2.75 2.75 2.75 h 8.782 c 1.519 0 2.75 -1.231 2.75 -2.75 V 23.518 L 65.626 37.8 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
-                <path d="M 47.115 56.312 V 87.25 c 0 1.519 1.231 2.75 2.75 2.75 h 8.782 c 1.519 0 2.75 -1.231 2.75 -2.75 V 42.03 L 47.115 56.312 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
-                <path d="M 39.876 60.503 c -1.937 0 -3.757 -0.754 -5.127 -2.124 l -6.146 -6.145 V 87.25 c 0 1.519 1.231 2.75 2.75 2.75 h 8.782 c 1.519 0 2.75 -1.231 2.75 -2.75 V 59.844 C 41.952 60.271 40.933 60.503 39.876 60.503 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
-                <path d="M 22.937 46.567 L 11.051 58.453 c -0.298 0.298 -0.621 0.562 -0.959 0.8 V 87.25 c 0 1.519 1.231 2.75 2.75 2.75 h 8.782 c 1.519 0 2.75 -1.231 2.75 -2.75 V 48.004 L 22.937 46.567 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
-            </g>
-        </svg>
-    `);
     container.append(button);
 }

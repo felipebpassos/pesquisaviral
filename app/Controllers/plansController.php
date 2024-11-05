@@ -62,7 +62,7 @@ class plansController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Verifique se o e-mail foi enviado no POST
             if (isset($_POST['email'])) {
-                $email = trim($_POST['email']);
+                $email = sanitizeInput($_POST['email']);
 
                 // Instancia o Model Rules
                 $rules = new Rules();
@@ -152,7 +152,7 @@ class plansController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Verifique se o código de verificação foi enviado no POST
             if (isset($_POST['code'])) {
-                $verificationCode = trim($_POST['code']);
+                $verificationCode = sanitizeInput($_POST['code']);
                 $emailVerified = $_SESSION['email-verified']; // E-mail verificado
                 $emailUsuario = $_SESSION['email']; // E-mail do usuário logado (Facebook)
 

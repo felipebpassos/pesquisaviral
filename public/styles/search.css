@@ -15,7 +15,17 @@ header {
     margin-right: 10px;
     margin-bottom: 20px;
     display: inline-block;
+    vertical-align: top;
     position: relative;
+}
+
+@media (max-width: 768px) {
+    #results-container .card {
+        min-width: 160px;
+        max-width: 160px;
+        max-height: 240px;
+        min-height: 240px;
+    }
 }
 
 #results-container .card img {
@@ -63,6 +73,10 @@ header {
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
 }
 
+.result-btn {
+    width: 100%;
+}
+
 .profile-ig .options button svg,
 .profile-ig .options button i {
     margin-right: 5px;
@@ -86,7 +100,7 @@ header {
 }
 
 .estimated-time {
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .top-options {

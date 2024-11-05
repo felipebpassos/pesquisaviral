@@ -2,63 +2,72 @@
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use Predis\Client;
+require __DIR__ . '/../../autoload.php';
+
+use Dotenv\Dotenv;
 
 class asyncController extends Controller
 {
     private $access_token;
     private $user_id;
-    private $usersModel;
+    private $redis;
 
     public function __construct()
     {
         session_name('pesquisaviral');
         session_start();
 
-        $this->access_token = 'EAAJog2OT3zQBO3m1yqGXnPLv4WFJCgQobb3y2Hqx4LvTWaeKHkiC4WEqMcEwZA7TwPLRuehXIHCu7GwaiCOtviXTYEFZBcPq3HJsRCdIr9zJysi4ZCBJGlujo0SYAm4gkDQOYH1UA50cBqePG2SvKhWKILrLtL7Se4zsqKlt5ABbRZA9Q0MkJbEZCvTNyD5G1qFIkoar2';
-        $this->user_id = '17841461803934118';
+        echo 'inicio';
+
+        // Carregar variáveis de ambiente do arquivo .env
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+        $dotenv->load();
+
+        $this->access_token = $_ENV['ACCESS_TOKEN'];
+        $this->user_id = $_ENV['USER_ID'];
+
+        $this->redis = $this->connectToRedis();
+    }
+
+    private function connectToRedis()
+    {
+        // Obter a URL do Redis a partir das variáveis de ambiente
+        $redisUrl = $_ENV['REDIS_URL'];
+
+        // Verifica se a URL do Redis está definida
+        if (empty($redisUrl)) {
+            throw new Exception('A URL do Redis não está definida nas variáveis de ambiente.');
+        }
+
+        // Criar o cliente Redis e conectar
+        try {
+            $redis = new Predis\Client($redisUrl); // Certifique-se de que está usando Predis ou outra biblioteca
+            $redis->connect(); // Conectar-se ao Redis
+            return $redis;
+        } catch (Exception $e) {
+            // Em caso de erro, lançar uma exceção com uma mensagem detalhada
+            throw new Exception('Erro ao conectar ao Redis: ' . $e->getMessage());
+        }
     }
 
     // Método para processar as mensagens da fila 'media_collection_queue'
     public function worker()
     {
-        // Conecta ao servidor Redis usando variáveis de ambiente ou localhost como padrão
-        $redisHost = getenv('REDIS_HOST') ?: 'localhost';
-        $redisPort = getenv('REDIS_PORT') ?: 6379;
+        // Processa todas as mensagens da fila 'media_collection_queue' até esvaziá-la
+        while ($message = $this->redis->lpop('media_collection_queue')) {
+            // Decodifica a mensagem JSON
+            $messageData = json_decode($message, true);
 
-        $redis = new Client([
-            'scheme' => 'tcp',
-            'host' => $redisHost,
-            'port' => $redisPort,
-        ]);
-
-        // Loop infinito para processar as mensagens da fila
-        while (true) {
-            // Remove uma mensagem da fila 'media_collection_queue'
-            $message = $redis->lpop('media_collection_queue');
-
-            // Verifica se há mensagens na fila
-            if ($message !== null) {
-                // Decodifica a mensagem JSON
-                $messageData = json_decode($message, true);
-
-                // Verifica se a mensagem foi decodificada com sucesso
-                if ($messageData !== null) {
-                    // Obtém os dados do usuário e o nome de usuário
-                    $user = $messageData['user'];
-                    $username = $messageData['username'];
-
-                    // Executa a coleta de mídias para o usuário
-                    $this->collectMedia($user, $username);
-                } else {
-                    echo 'Erro ao decodificar a mensagem JSON.';
-                }
+            if ($messageData !== null) {
+                $user = $messageData['user'];
+                $username = $messageData['username'];
+                $this->collectMedia($user, $username);
             } else {
-                // Aguarda 1 segundo antes de verificar novamente a fila
-                echo 'Nenhuma mensagem na fila.';
-                sleep(1);
+                echo 'Erro ao decodificar a mensagem JSON.';
             }
         }
+
+        echo "Todas as mensagens da fila foram processadas.\n";
     }
 
     private function collectMedia($user, $username)
@@ -114,26 +123,23 @@ class asyncController extends Controller
     // Método para verificar o progresso da pesquisa
     public function progress()
     {
-        // Conecta ao servidor Redis
-        $redis = new Client();
-
         // Verifica se a busca foi marcada como concluída
         $searchFinishedKey = 'search_finished_' . $_SESSION['email'];
-        $searchFinished = $redis->get($searchFinishedKey);
+        $searchFinished = $this->redis->get($searchFinishedKey);
 
         if ($searchFinished) {
             $progress = 100; // Se a busca foi concluída, o progresso é 100%
 
             // Remove a chave de busca concluída do cache
-            $redis->del($searchFinishedKey);
+            $this->redis->del($searchFinishedKey);
         } else {
             // Recupera a contagem total de mídias do perfil do cache
-            $profileInfo = $redis->get('profileInfo_' . $_SESSION['email']);
+            $profileInfo = $this->redis->get('profileInfo_' . $_SESSION['email']);
             $profileInfo = json_decode($profileInfo, true);
             $totalMediaCount = $profileInfo['media_count'];
 
             // Recupera as mídias coletadas do cache
-            $collectedMedia = $redis->get('media_' . $_SESSION['email']);
+            $collectedMedia = $this->redis->get('media_' . $_SESSION['email']);
             $collectedMedia = json_decode($collectedMedia, true);
             $collectedMediaCount = count($collectedMedia);
 
@@ -149,17 +155,11 @@ class asyncController extends Controller
 
     private function finalizaSearch($user, $username)
     {
-        // Instancia o modelo de usuários
-        $this->usersModel = new Usuarios();
-
-        // Conecta ao servidor Redis
-        $redis = new Client();
-
         // Recupera os dados de mídia do cache
-        $mediaData = json_decode($redis->get('media_' . $user), true);
+        $mediaData = json_decode($this->redis->get('media_' . $user), true);
 
         // Recupera os dados de perfil do cache
-        $profileData = json_decode($redis->get('profileInfo_' . $user), true);
+        $profileData = json_decode($this->redis->get('profileInfo_' . $user), true);
 
         // Verifica se ambos os conjuntos de dados foram recuperados com sucesso
         if ($mediaData && $profileData) {
@@ -170,28 +170,21 @@ class asyncController extends Controller
             // Mescla os dados de perfil com os dados de mídia
             $mergedData = array_merge($profileData, $mediaDocument);
 
-            // Salva resultados da pesquisa na coleção de usuários
-            $result = $this->usersModel->saveSearchResult($user, $username, $mergedData);
-
-            if ($result) {
-
-                // Incrementa o número de pesquisas mensais feitas pelo usuário
-                $this->usersModel->incrementUserSearchCount($user);
-
-                // Chamada ao método para registrar pesquisa no model Searches
-                $searchesModel = new Searches();
-                $searchesModel->registerSearch($username, $profileData['profile_picture_url']);
-            } else {
-                // Falha: os resultados da pesquisa não puderam ser salvos
-                echo "Error saving search.";
-            }
-
-            // Marca a busca como concluída no cache
-            $this->markSearchAsFinished($user);
+            // Cache com a marca de finalização
+            $finalCacheKey = 'finished_' . $user;
+            $finalCacheData = [
+                'username' => $username,
+                'merged_data' => $mergedData,
+                'finished_at' => date('Y-m-d H:i:s') // Adiciona a data e hora de finalização
+            ];
 
             // Remover os dados do cache
             $this->removeFromCache('profileInfo_' . $user);
             $this->removeFromCache('media_' . $user);
+            // Salva em cache sem expiração, para ser salvo no banco posteriormente
+            $this->storeInCache($finalCacheKey, $finalCacheData);
+
+            echo 'teste';
         } else {
             // Caso não seja possível recuperar algum dos conjuntos de dados
             // Trate esse cenário conforme necessário
@@ -201,32 +194,16 @@ class asyncController extends Controller
     // Método para armazenar dados em cache
     private function storeInCache($cacheKey, $data)
     {
-        // Conecta ao servidor Redis
-        $redis = new Client();
-
         // Converte os dados em JSON
         $jsonData = json_encode($data);
 
         // Armazena os dados em cache com um tempo de expiração de 1 hora (3600 segundos)
-        $redis->setex($cacheKey, 3600, $jsonData);
+        $this->redis->setex($cacheKey, 3600, $jsonData);
     }
 
     private function removeFromCache($cacheKey)
     {
-        // Conecta ao servidor Redis
-        $redis = new Client();
-
         // Remove os dados correspondentes ao cacheKey
-        $redis->del($cacheKey);
-    }
-
-    private function markSearchAsFinished($user)
-    {
-        // Conecta ao servidor Redis
-        $redis = new Client();
-
-        // Marca a busca como concluída no cache
-        $cacheKey = 'search_finished_' . $user;
-        $redis->set($cacheKey, true);
+        $this->redis->del($cacheKey);
     }
 }
