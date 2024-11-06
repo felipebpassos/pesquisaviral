@@ -18,6 +18,7 @@
 
     <!-- ... estilos ... -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/styles/default.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/styles/footer.css">
     <?php
     foreach ($styles as $style) {
         echo '<link rel="stylesheet" href="' . BASE_URL . 'public/styles/' . $style . '.css">' . PHP_EOL;
@@ -50,6 +51,13 @@
             <span>Ao continuar, você estará confirmando que leu nossos<br>Termos & Condições e Políticas de Cookies</span>
         </div>
     </main>
+
+    <!-- Rodapé -->
+    <footer>
+        <div class="copyright">
+            &copy; 2024, Pesquisa Viral | Developed by <a href="https://simplifyweb.com.br" target="_blank">Felipe Passos</a>
+        </div>
+    </footer>
 
     <a href="https://api.whatsapp.com/send?phone=5579996010545" class="whatsapp-button" target="_blank">
         <img src="<?php echo BASE_URL; ?>public/img/msg.png" alt="Ícone do WhatsApp">

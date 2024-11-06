@@ -57,7 +57,7 @@
                 <li><a <?php echo ($_SESSION['page'] == 'search') ? 'class="atual"' : ''; ?> href="<?php echo BASE_URL; ?>search/">
                         <i class="fa-solid fa-users"></i> Pesquisas
                     </a></li>
-                <li style="display: none;"><a <?php echo ($_SESSION['page'] == 'about') ? 'class="atual"' : ''; ?> href="<?php echo BASE_URL; ?>painel/about">
+                <li><a <?php echo ($_SESSION['page'] == 'about') ? 'class="atual"' : ''; ?> href="<?php echo BASE_URL; ?>painel/about">
                         <i class="fa-solid fa-circle-question"></i> Sobre
                     </a></li>
                 <li><a href="<?php echo BASE_URL; ?>logout/">

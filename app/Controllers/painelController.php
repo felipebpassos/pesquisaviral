@@ -160,7 +160,7 @@ class painelController extends Controller
         $data['description'] = '';
         $data['styles'] = array('');
         $data['scripts_head'] = array('');
-        $data['scripts_body'] = array('');
+        $data['scripts_body'] = array('toggle-menu');
 
         //load view
         $this->loadTemplates($template, $data);

@@ -26,6 +26,10 @@ header {
         max-height: 240px;
         min-height: 240px;
     }
+
+    .ver-post {
+        font-size: 12px;
+    }
 }
 
 #results-container .card img {

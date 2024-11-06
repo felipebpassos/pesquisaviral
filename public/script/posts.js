@@ -39,7 +39,7 @@ $(document).ready(function () {
             '<a class="download-media" href="' + (result.media_url || result.thumbnail_url) + '" download>' +
             '<i class="fa-solid fa-cloud-arrow-down"></i></a>' +
             '<a class="link-post" href="' + (result.permalink || '#') + '" target="_blank">' +
-            '<button class="btn-3">Ver Post</button></a>' +
+            '<button class="btn-3 ver-post">Ver Post</button></a>' +
             '</div></footer>' +
             '<div class="captionBox">' +
             '<p class="caption">' + (result.caption || "") + '</p>' +
