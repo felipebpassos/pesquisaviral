@@ -1,7 +1,19 @@
+<IfModule mod_headers.c>
+Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 # Roteamento para o arquivo "pesquisaviral/index.php" para qualquer URL
+RewriteRule ^(.*)$ /index.php?pag=$1 [QSA,L]
+
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Roteamento para o arquivo "/pesquisaviral/index.php" para qualquer URL
 RewriteRule ^(.*)$ /index.php?pag=$1 [QSA,L]
 
